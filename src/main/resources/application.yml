@@ -1,0 +1,7 @@
+server:
+  port: 5000
+bot:
+  token: ${BOT_TOKEN}
+  name: ${BOT_NAME}
+  path: ${BOT_PATH}
+  mainchat: ${MAIN_CHAT}
