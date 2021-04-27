@@ -1,15 +1,30 @@
 package org.rch.jarvisapp;
 
+import org.rch.jarvisapp.bot.JarvisBot;
+import org.rch.jarvisapp.home.Home;
+import org.rch.jarvisapp.utils.LiveProbe;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.telegram.telegrambots.ApiContextInitializer;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 @SpringBootApplication
 public class JarvisAppApplication {
 
 	public static void main(String[] args) {
 		ApiContextInitializer.init();
-		SpringApplication.run(JarvisAppApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(JarvisAppApplication.class, args);
+
+		JarvisBot bot = context.getBean(JarvisBot.class);
+		try {
+			bot.setWebhook(bot.getBotPath(),null);
+		} catch (TelegramApiRequestException e) {
+			e.printStackTrace();
+		}
+
+		new LiveProbe(context.getBean(Home.class),context.getBean(JarvisBot.class)).start();
+		System.out.println("далее");
 	}
 
 }

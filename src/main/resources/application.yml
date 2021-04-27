@@ -5,3 +5,7 @@ bot:
   name: ${BOT_NAME}
   path: ${BOT_PATH}
   mainchat: ${MAIN_CHAT}
+home:
+  proto: ${HOME_CONNECTION_PROTOCOL}
+  ip: ${HOME_CONNECTION_IP}
+  port: ${HOME_CONNECTION_PORT}
