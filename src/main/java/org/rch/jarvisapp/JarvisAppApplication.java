@@ -23,8 +23,9 @@ public class JarvisAppApplication {
 			e.printStackTrace();
 		}
 
-		new LiveProbe(context.getBean(Home.class),context.getBean(JarvisBot.class)).start();
-		System.out.println("далее");
+		(context.getBean(LiveProbe.class)).start();
+		//new LiveProbe(context.getBean(Home.class),context.getBean(JarvisBot.class)).start();
+
 	}
 
 }

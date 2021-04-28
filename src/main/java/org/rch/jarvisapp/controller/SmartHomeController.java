@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -17,7 +17,7 @@ public class SmartHomeController {
     @Autowired
     JarvisBot bot;
 
-    @RequestMapping(value = "/alert", method = RequestMethod.POST)
+    @PostMapping(value = "/alert")
     public ResponseEntity<?> alert(@RequestBody String data){
 
         try {
