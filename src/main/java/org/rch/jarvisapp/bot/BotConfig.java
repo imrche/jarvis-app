@@ -14,5 +14,5 @@ public class BotConfig {
     String name;
     String token;
     String path;
-    Long mainchat;//todo перенести мб
+    Long mainchat;
 }

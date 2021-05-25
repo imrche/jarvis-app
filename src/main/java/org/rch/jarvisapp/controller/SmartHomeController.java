@@ -1,6 +1,9 @@
 package org.rch.jarvisapp.controller;
 
-import org.rch.jarvisapp.bot.JarvisBot;
+import org.json.JSONArray;
+import org.rch.jarvisapp.bot.MessageBuilder;
+import org.rch.jarvisapp.bot.ui.Tile;
+import org.rch.jarvisapp.bot.ui.TilePool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,22 +11,36 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 
 @Controller
 @RequestMapping("/SH")
 public class SmartHomeController {
     @Autowired
-    JarvisBot bot;
+    MessageBuilder messageBuilder;
+
+    @Autowired
+    TilePool tilePool;
 
     @PostMapping(value = "/alert")
     public ResponseEntity<?> alert(@RequestBody String data){
+       if (messageBuilder.sendAsync(data) < 0)
+           return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
-        try {
-            bot.execute(new SendMessage(bot.getChat(), data));
-        } catch (TelegramApiException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/changeStatus")
+    public ResponseEntity<?> changeStatus(@RequestBody String data){
+        for (Object obj : new JSONArray(data)){
+            try {
+                Integer messageId = Integer.parseInt(obj.toString());
+                Tile tile = tilePool.getTileWith(messageId);
+                if (tile != null)
+                    tile.refresh().publish();
+                else
+                    tilePool.clearFeedBack(messageId);
+            } catch (NumberFormatException ignored){}
         }
 
         return new ResponseEntity<>(HttpStatus.OK);

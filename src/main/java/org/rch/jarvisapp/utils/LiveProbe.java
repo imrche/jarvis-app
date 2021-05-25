@@ -1,36 +1,60 @@
 package org.rch.jarvisapp.utils;
 
 import lombok.SneakyThrows;
-import org.rch.jarvisapp.bot.Notifier;
-import org.rch.jarvisapp.home.Home;
+import org.rch.jarvisapp.bot.MessageBuilder;
+import org.rch.jarvisapp.bot.enums.Settings;
+import org.rch.jarvisapp.bot.enums.Stickers;
+import org.rch.jarvisapp.bot.services.SettingService;
+import org.rch.jarvisapp.smarthome.api.Api;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class LiveProbe extends Thread {
-    Home home;
-    Notifier notifier;
-    boolean isDown;
+    private final Api api;
 
-    public LiveProbe(Home home, Notifier notifier){
-        this.home = home;
-        this.notifier = notifier;
+    private final SettingService settingService;
+    private boolean isDown;
+    private final MessageBuilder messageBuilder;
+
+    public LiveProbe(Api api, MessageBuilder messageBuilder, SettingService settingService){
+        this.api = api;
+        this.messageBuilder = messageBuilder;
+        this.settingService = settingService;
         setDaemon(true);
+    }
+
+    private String getLiveProbeSetting(){
+        return settingService.tmpSettings.get(Settings.liveProbeTiming.name()).toString();
     }
 
     @SneakyThrows
     @Override
     public void run() {
+        String liveProbeTime = getLiveProbeSetting();
+        int liveProbeTimeInt = Util.timeStr2Int(liveProbeTime);
         while (true){
-            if (!home.isOnline() && !isDown) {
-                notifier.send("АЛЯРМ! Соединение с домом потеряно!");
-                isDown=true;
+            if (!api.isOnline()) {
+                if (!isDown) {
+                    messageBuilder.sendAsync("АЛЯРМ! Соединение с домом потеряно!");
+                    messageBuilder.sendStickerAsync(Stickers.wait);
+                    isDown = true;
+                }
             }
-            else if(isDown){
-                notifier.send("Соединение восстановлено");
-                isDown=false;
+            else {
+                if (isDown) {
+                    messageBuilder.sendAsync("Соединение восстановлено");
+                    messageBuilder.sendStickerAsync(Stickers.notExactly);
+                    isDown = false;
+                }
             }
-            Thread.sleep(60000);
+
+            //System.out.println("check");
+            if (!liveProbeTime.equals(getLiveProbeSetting())){
+                liveProbeTime = getLiveProbeSetting();
+                liveProbeTimeInt = Util.timeStr2Int(liveProbeTime);
+            }
+
+            Thread.sleep(liveProbeTimeInt);
         }
     }
 }

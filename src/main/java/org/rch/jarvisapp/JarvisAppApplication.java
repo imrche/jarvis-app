@@ -1,7 +1,6 @@
 package org.rch.jarvisapp;
 
 import org.rch.jarvisapp.bot.JarvisBot;
-import org.rch.jarvisapp.home.Home;
 import org.rch.jarvisapp.utils.LiveProbe;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,8 +23,6 @@ public class JarvisAppApplication {
 		}
 
 		(context.getBean(LiveProbe.class)).start();
-		//new LiveProbe(context.getBean(Home.class),context.getBean(JarvisBot.class)).start();
-
+		AppContextHolder.getTilePool().clearFeedBack();
 	}
-
 }
