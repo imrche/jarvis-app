@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.utils.NetUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ public class Api {
     String port;
 
     final String STATUS_LIGHT = "/status/light";
+    final String STATUS_SENSOR = "/status/sensors";
     final String SET_LIGHT = "/set/light";
     final String SET_GATE = "/set/gate";
     final String SET_UPD_MESSAGE = "/set/updatingMessage";
@@ -57,6 +59,13 @@ public class Api {
         String response = NetUtil.sendPOST(getURL() + SET_GATE, req).get(NetUtil.RESPONSE);
         return response;
     }
+
+    public SensorData getStatusSensor(SensorData req) {
+        String response = NetUtil.sendPOST(getURL() + STATUS_SENSOR, req.toString()).get(NetUtil.RESPONSE);
+
+        return new SensorData(response);
+    }
+
 
     public void setUpdatingMessage(String request){
         NetUtil.sendPOST(getURL() + SET_UPD_MESSAGE, request);

@@ -1,6 +1,7 @@
 package org.rch.jarvisapp.bot.services;
 
 import org.rch.jarvisapp.bot.dataobject.ActionData;
+import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.bot.enums.ActionType;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.ui.Tile;
@@ -22,12 +23,25 @@ public class SensorService {
     @Autowired
     SmartHome smartHome;
 
-    public void showTemperature(Tile tile, ActionData actionData){
-        List<Sensor> list = smartHome.getSensors(SensorTypes.temperature);
-        StringBuilder result = new StringBuilder(MD.italic("Температура") + "\n");
+    private SensorData getSensorValues(List<Sensor> list){
+        SensorData patternSD = new SensorData();
+        for (Sensor sensor : list)
+            patternSD.addSensor(sensor);
+
+        return smartHome.getApi().getStatusSensor(patternSD);
+    }
+
+    public void showSensorByType(Tile tile, SensorTypes type){
+        List<Sensor> list = smartHome.getSensors(type);
+        SensorData responseSD = getSensorValues(list);
+
+        StringBuilder result = new StringBuilder(MD.italic(type.getDescription()) + "\n");
 
         for (Sensor sensor : list){
-            result.append(MD.fixWidth(sensor.getPlacement().getName(), 20)).append(MD.bold("XX")).append("°").append("\n");
+            result.append(MD.fixWidth(sensor.getPlacement().getName(), 20))
+                    .append(MD.bold(responseSD.getSensorValue(sensor)))
+                    .append(type.getUnit())
+                    .append("\n");
         }
 
         tile.update()
@@ -49,10 +63,15 @@ public class SensorService {
             //пока полагаем что датчики есть только в конечных помещениях
             if (kb.getButtons().size() == 0){
                 List<Sensor> list = smartHome.getSensors(placeCode);
+                SensorData responseSD = getSensorValues(list);
+
                 StringBuilder result = new StringBuilder(MD.italic(smartHome.getPlaceByCode(placeCode).getName()) + "\n");
 
                 for (Sensor sensor : list){
-                    result.append(MD.fixWidth(sensor.getSensorType().getDescription(), 20)).append(MD.bold("XX")).append(sensor.getSensorType().getUnit()).append("\n");
+                    result.append(MD.fixWidth(sensor.getSensorType().getDescription(), 20))
+                            .append(MD.bold(responseSD.getSensorValue(sensor)))
+                            .append(sensor.getSensorType().getUnit())
+                            .append("\n");
                 }
 
                 tile.update()

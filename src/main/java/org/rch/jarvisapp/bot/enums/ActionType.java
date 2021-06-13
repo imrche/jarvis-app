@@ -7,6 +7,7 @@ import org.rch.jarvisapp.bot.services.LightServices;
 import org.rch.jarvisapp.bot.services.SensorService;
 import org.rch.jarvisapp.bot.services.SettingService;
 import org.rch.jarvisapp.bot.ui.Tile;
+import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 
 public enum ActionType {
     setLight    (""){
@@ -72,7 +73,42 @@ public enum ActionType {
     showTemperature("Температура"){
         @Override
         public void run(Tile tile, ActionData actionData) {
-            getSensorService().showTemperature(tile, actionData);
+            getSensorService().showSensorByType(tile, SensorTypes.temperature);
+        }
+    },
+
+    showHumidity("Влажность"){
+        @Override
+        public void run(Tile tile, ActionData actionData) {
+            getSensorService().showSensorByType(tile, SensorTypes.humidity);
+        }
+    },
+
+    showIlluminance("Освещенность"){
+        @Override
+        public void run(Tile tile, ActionData actionData) {
+            getSensorService().showSensorByType(tile, SensorTypes.illuminance);
+        }
+    },
+
+    showSound("Уровень шума"){
+        @Override
+        public void run(Tile tile, ActionData actionData) {
+            getSensorService().showSensorByType(tile, SensorTypes.sound);
+        }
+    },
+
+    showMotion("Движение"){
+        @Override
+        public void run(Tile tile, ActionData actionData) {
+            getSensorService().showSensorByType(tile, SensorTypes.motion);
+        }
+    },
+
+    showCO2("CO2"){
+        @Override
+        public void run(Tile tile, ActionData actionData) {
+            getSensorService().showSensorByType(tile, SensorTypes.CO2);
         }
     },
 

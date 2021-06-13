@@ -3,8 +3,8 @@ package org.rch.jarvisapp.smarthome.enums;
 public enum SensorTypes {
     temperature("Температура", "°"),
     humidity("Влажность", "%"),
-    co2("CO2", ""),
-    co("Угарный газ", ""),
+    CO2("CO2", ""),
+    CO("Угарный газ", ""),
     motion("Движение", ""),
     sound("Шум", "dB"),
     illuminance("Освещенность", "лк");

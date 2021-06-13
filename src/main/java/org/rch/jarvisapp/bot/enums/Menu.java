@@ -19,6 +19,11 @@ public enum Menu {
 
     statusPlaceGroup        (BotCommand.status,1, ActionType.showSensorsStatus.getDescription(), ActionType.showSensorsStatus, true),
     statusTemperature       (BotCommand.status,2, ActionType.showTemperature.getDescription(), ActionType.showTemperature),
+    statusHumidity          (BotCommand.status,2, ActionType.showHumidity.getDescription(), ActionType.showHumidity),
+    statusIlluminance       (BotCommand.status,3, ActionType.showIlluminance.getDescription(), ActionType.showIlluminance),
+    statusSound             (BotCommand.status,3, ActionType.showSound.getDescription(), ActionType.showSound),
+    statusCO2               (BotCommand.status,4, ActionType.showCO2.getDescription(), ActionType.showCO2),
+    statusMotion            (BotCommand.status,4, ActionType.showMotion.getDescription(), ActionType.showMotion),
 
     warningsTemperature     (BotCommand.warnings,1,"Температура", ActionType.stub),
     warningsHumidity        (BotCommand.warnings,2,"Влажность", ActionType.stub),

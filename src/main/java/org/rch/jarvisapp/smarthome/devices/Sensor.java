@@ -13,7 +13,7 @@ import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 public class Sensor extends Device{
     public static final String className = "sensor";
 
-    private enum Protocol { zigbee, mqtt }
+    public enum Protocol { zigbee, mqtt }
 
     SensorTypes sensorType;
     Protocol protocol;
