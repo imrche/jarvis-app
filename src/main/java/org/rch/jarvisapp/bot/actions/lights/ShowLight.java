@@ -18,15 +18,15 @@ import java.util.List;
 
 //когда ставлю аннотацию Data, то спринг начинает создавать бины по новой или что-то типа и зовутся методы getPlaces и getDevices todo разобраться
 
-public class ShowLightAction implements Action, RunnableByPlace {
-    String description = "Освещение";
+public class ShowLight implements Action, RunnableByPlace {
+    public final static String description = "Освещение";
 
     private String place;
     SmartHome smartHome = AppContextHolder.getSH();
 
-    public ShowLightAction() {}
+    public ShowLight() {}
 
-    public ShowLightAction(String place) {
+    public ShowLight(String place) {
         this.place = place;
     }
 
@@ -42,17 +42,11 @@ public class ShowLightAction implements Action, RunnableByPlace {
     @Override
     public void run(Tile tile){
         if (place != null){
-           // String placeCode = place;
             List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 
             KeyBoard kb = new LightKeyBoard(place);
-            for (Place place : places) {
-                //kb.addButton(1, new Button(place.getName(),new ActionData(type, place.getCode(), "")));
-                //ShowLightAction action = new ShowLightAction(place.getCode());
-                //action.setPlace(place.getCode());
-                kb.addButton(1, new Button(place.getName(), new ShowLightAction(place.getCode())));
-
-            }
+            for (Place place : places)
+                kb.addButton(1, new Button(place.getName(), new ShowLight(place.getCode())));
 
             KeyBoard kbLight = new LightKeyBoard();
             List<Light> lightList = smartHome.getDevicesByType(Light.class, place);

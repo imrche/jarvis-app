@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.actions.lights.SetLight;
 import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
+import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
 import org.rch.jarvisapp.smarthome.devices.Light;
@@ -71,7 +72,7 @@ public class LightKeyBoard extends KeyBoard{
         for (Button button : getButtonsList()) {
             countButton++;
 
-            if (((LightButton) button).getState2())
+            if (((LightButton) button).getState())
                 countOn++;
         }
 
@@ -95,13 +96,16 @@ public class LightKeyBoard extends KeyBoard{
             for (Button button : getButtonsList()) {
                 if (button instanceof LightButton) {
                     LightButton btn = (LightButton) button;
-                    btn.setState2(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
+                    try {
+                        btn.setState(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
+                    } catch (DeviceStatusIsUnreachable e) {
+                        btn.setState(null);
+                    }
                     btn.setCaption();
                 }
             }
             setVisibleGroupButton();
         }
-
     }
 
     @Override

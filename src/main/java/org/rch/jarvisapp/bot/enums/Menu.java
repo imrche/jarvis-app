@@ -3,26 +3,30 @@ package org.rch.jarvisapp.bot.enums;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.RunnableByPlace;
 import org.rch.jarvisapp.bot.actions.StubAction;
+import org.rch.jarvisapp.bot.actions.devices.ShowRangeHood;
 import org.rch.jarvisapp.bot.actions.gates.ShowGates;
-import org.rch.jarvisapp.bot.actions.lights.ShowLightAction;
+import org.rch.jarvisapp.bot.actions.lights.ShowLight;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
+import org.rch.jarvisapp.bot.actions.valves.ShowValve;
+import org.rch.jarvisapp.bot.actions.windows.ShowWindowsStatus;
+import org.rch.jarvisapp.smarthome.devices.Valve;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 
 public enum Menu {
-    controlLights           (BotCommand.control,1,"Освещение", ShowLightAction.class,true),
+    controlLights           (BotCommand.control,1,"Освещение", ShowLight.class,true),
     controlClimate          (BotCommand.control,2,BotCommand.climate.getDescription(), BotCommand.climate),
 
-        climateGasBoiler    (BotCommand.climate,1,"Котел", Action.class),
-        climateBreezier     (BotCommand.climate,2,"Бризеры", Action.class),
-        climateRadiators    (BotCommand.climate,3,"Радиаторы", Action.class),
+        climateGasBoiler    (BotCommand.climate,1,"Котел", StubAction.class),
+        climateBreezier     (BotCommand.climate,2,"Бризеры", StubAction.class),
+        climateRadiators    (BotCommand.climate,3,"Радиаторы", StubAction.class),
 
     controlBath             (BotCommand.control,3,"Ванные", BotCommand.bathroom),
 
-        bathroomWaterSupply (BotCommand.bathroom,1,"Ввод воды", Action.class),
-        bathroomHoods       (BotCommand.bathroom,2,"Вытяжки", Action.class),
-        bathroomDryer       (BotCommand.bathroom,3,"Сушилки", Action.class),
+        bathroomWaterSupply (BotCommand.bathroom,1,ShowValve.description, ShowValve.class),
+        bathroomHoods       (BotCommand.bathroom,2,"Вытяжки", ShowRangeHood.class),
+        bathroomDryer       (BotCommand.bathroom,3,"Сушилки", StubAction.class),
 
     statusPlaceGroup        (BotCommand.status,1, ShowSensorsStatus.description,            ShowSensorsStatus.class, true),
     statusTemperature       (BotCommand.status,2, SensorTypes.temperature.getDescription(), ShowTemperature.class),
@@ -32,14 +36,14 @@ public enum Menu {
     statusCO2               (BotCommand.status,4, SensorTypes.CO2.getDescription(),         ShowCO2.class),
     statusMotion            (BotCommand.status,4, SensorTypes.motion.getDescription(),      ShowMotion.class),
 
-    warningsTemperature     (BotCommand.warnings,1,"Температура", Action.class),
-    warningsHumidity        (BotCommand.warnings,2,"Влажность", Action.class),
+    warningsTemperature     (BotCommand.warnings,1,"Температура", StubAction.class),
+    warningsHumidity        (BotCommand.warnings,2,"Влажность", StubAction.class),
 
 
     securityDoorLock        (BotCommand.security,1, "Входной замок", StubAction.class),
     securityGate            (BotCommand.security,2, ShowGates.description, ShowGates.class),
     securityMotionSensor    (BotCommand.security,3, "Датчики движения", StubAction.class),
-    securityOpenWindows     (BotCommand.security,4, "Статус окон", StubAction.class),
+    securityOpenWindows     (BotCommand.security,4, ShowWindowsStatus.description, ShowWindowsStatus.class,true),
 
 
     settingsBot             (BotCommand.settings,1, ShowSettings.description, ShowSettings.class),

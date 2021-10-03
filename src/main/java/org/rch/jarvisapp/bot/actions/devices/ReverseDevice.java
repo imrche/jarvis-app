@@ -1,29 +1,31 @@
-package org.rch.jarvisapp.bot.actions.lights;
+package org.rch.jarvisapp.bot.actions.devices;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.smarthome.api.Api;
 
-public class ReverseLightAction implements Action, DataContained {
+public class ReverseDevice implements Action, DataContained {
     Api api = AppContextHolder.getApi();
     String data;
 
-    public ReverseLightAction() {}
-
-    public ReverseLightAction(DeviceCommandData data) {
+    public ReverseDevice(DeviceCommandData data) {
         setData(data);
     }
 
     @Override
     public void run(Tile tile){
-        api.setStatusLight(api.getStatusLight(new DeviceCommandData(data)).reverse());
+        try {
+            api.setStatusDevice(api.getStatusDevice(new DeviceCommandData(data)).reverse());
+        } catch (DeviceStatusIsUnreachable e) {
+            tile.popup(e.getMessage());
+        }
         //todo перенести реверс на сервер (возвращать статус, который получился по итогу)
         tile.refresh();
     }
-
 
     @Override
     public Action setData(Object data) {
@@ -35,7 +37,6 @@ public class ReverseLightAction implements Action, DataContained {
     public Object getData() {
         return data;
     }
-
 
     @Override
     public int hashCode() {

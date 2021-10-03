@@ -5,65 +5,56 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
+import org.rch.jarvisapp.bot.actions.devices.ReverseDevice;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.actions.lights.ReverseLight;
 import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
 import org.rch.jarvisapp.smarthome.api.Api;
-import org.rch.jarvisapp.smarthome.devices.Light;
+import org.rch.jarvisapp.smarthome.devices.Device;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = true)
-public class LightButton extends Button{
-    Light light;
+public class DeviceButton extends Button{
+    Device device;
     Boolean state;
 
     DeviceCommandData patternCD;
 
-    public LightButton(Light light){
+    public DeviceButton(Device device){
         super();
-        this.light = light;
-        patternCD = new DeviceCommandData().addDevice(light.getId());
+        this.device = device;
+        patternCD = new DeviceCommandData().addDevice(device.getId());
     }
 
-    public LightButton setCaption() {
-        super.setText(light.getName() + (state != null ? " " + visualize(state) : ""));
+    public DeviceButton setCaption() {
+        super.setText(device.getPlacement().getName() + " " + visualize(state));
         return this;
     }
 
     public static String visualize(Boolean value){
-        if (value == null) return "?";
+        if (value == null) return "❓";
 
-        String on = "\uD83C\uDF15";
-        String off = "\uD83C\uDF11";
+        String on = "\uD83D\uDD18";
+        String off = "⚫";
 
         return value ? on : off;
     }
 
     public void getCurrentState(){
         Api api = AppContextHolder.getApi();
-        DeviceCommandData cd = api.getStatusLight(patternCD);
+        DeviceCommandData cd = api.getStatusDevice(patternCD);
         try {
-            state = cd.getDeviceBooleanValue(light.getId());
+            state = cd.getDeviceBooleanValue(device.getId());
         } catch (DeviceStatusIsUnreachable e) {
-            state = null;
+            state = null;//todo tmp
         }
     }
 
-/*    public Button refresh(){
-        getCurrentState();
-        setText(getCaption());
-        return this;
-    }*/
-
-    public Button build(){
-        return build(false);
-    }
     public Button build(boolean withoutState){
         if (!withoutState)
             getCurrentState();
         setCaption();
-        setCallbackData(new ReverseLight(patternCD).caching());
+        setCallbackData(new ReverseDevice(patternCD).caching());
 
         return this;
     }

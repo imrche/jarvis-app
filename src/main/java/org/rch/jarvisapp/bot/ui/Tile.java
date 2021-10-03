@@ -113,6 +113,10 @@ public class Tile{
         return this;
     }
 
+    public void popup(String message){
+        getMessageBuilder().popupAsync(messageId.toString(), message);
+    }
+
     public MessageBuilder getMessageBuilder(){
         return AppContextHolder.getMessageBuilder();
     }

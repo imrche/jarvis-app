@@ -16,4 +16,6 @@ public class Device {
         this.placement = AppContextHolder.getSH().getPlaceByCode(placement);
         this.id = id;
     }
+
+    public Device() {}
 }

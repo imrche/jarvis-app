@@ -9,10 +9,7 @@ import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.areas.Room;
-import org.rch.jarvisapp.smarthome.devices.Device;
-import org.rch.jarvisapp.smarthome.devices.Gate;
-import org.rch.jarvisapp.smarthome.devices.Light;
-import org.rch.jarvisapp.smarthome.devices.Sensor;
+import org.rch.jarvisapp.smarthome.devices.*;
 import org.rch.jarvisapp.smarthome.init.enums.FieldTypes;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +28,9 @@ public class HomeInitializer {
             case "light": return Light.class;
             case "gate": return Gate.class;
             case "sensor": return Sensor.class;
-            //case "valve":
-            //case "window":
-            //case "endDevice":
+            case "rangehood": return RangeHood.class;
+            case "valve": return Valve.class;
+            case "window": return Window.class;
             default: throw new UnknownDeviceTypeException("Не распознано - " + type);
         }
     }

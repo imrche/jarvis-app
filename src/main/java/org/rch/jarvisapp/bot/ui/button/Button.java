@@ -29,6 +29,5 @@ public class Button extends InlineKeyboardButton {
     }
 
     public void refresh(){
-
     }
 }

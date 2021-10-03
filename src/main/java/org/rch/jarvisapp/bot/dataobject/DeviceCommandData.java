@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.dataobject;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -60,7 +61,6 @@ public class DeviceCommandData extends JSONArray {
         return this;
     }
 
-
     public DeviceCommandData addDevice(Integer id){
         return addDevice(id,null);
     }
@@ -71,14 +71,12 @@ public class DeviceCommandData extends JSONArray {
         return this;
     }
 
-
     public DeviceCommandData setAllDevicesValue(Integer newValue){
         for(Object o : this)
             setDeviceValue((Integer) ((JSONObject)o).get(ID), newValue);
 
         return this;
     }
-
 
     public void setDeviceValue(Integer id, Integer value){
         for(Object o : this)
@@ -96,22 +94,26 @@ public class DeviceCommandData extends JSONArray {
         put(newObj);
     }
 
-
     public void setDeviceValue(Integer id, Boolean newValue){
         setDeviceValue(id, newValue ? 1 : 0);
     }
 
     @Nullable
-    public Integer getDeviceValue(Integer id){
+    public Integer getDeviceValue(Integer id) throws DeviceStatusIsUnreachable {
         for(Object o : this)
-            if (((JSONObject)o).get(ID) == id)
-                return Integer.valueOf(((JSONObject) o).get(VALUE).toString());
-
+            if (((JSONObject)o).get(ID) == id) {
+                String responseValue = ((JSONObject) o).get(VALUE).toString();
+                try {
+                    return Integer.valueOf(responseValue);
+                } catch (NumberFormatException e) {
+                    throw new DeviceStatusIsUnreachable(String.format("Ошибка статуса устройства id=%s (%s)",id,responseValue), e);
+                }
+            }
         return null;
     }
 
     @Nullable
-    public Boolean getDeviceBooleanValue(Integer id){
+    public Boolean getDeviceBooleanValue(Integer id) throws DeviceStatusIsUnreachable {
         Integer result = getDeviceValue(id);
         if (result == null) return null;
         switch (result) {
@@ -121,7 +123,7 @@ public class DeviceCommandData extends JSONArray {
         }
     }
 
-    public DeviceCommandData reverse(){
+    public DeviceCommandData reverse() throws DeviceStatusIsUnreachable {
         DeviceCommandData result = this;
         for(Object o : this){
             Integer id = (Integer) ((JSONObject)o).get(ID);
@@ -154,7 +156,6 @@ public class DeviceCommandData extends JSONArray {
         put(newObj);
         return newObj;
     }
-
 
 /*    public Map<Device,String> getDeviceList(SmartHome home){
         Map<Device,String> result = new HashMap<>();
