@@ -1,30 +1,35 @@
 package org.rch.jarvisapp.smarthome.devices;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import org.rch.jarvisapp.smarthome.areas.Place;
+import org.rch.jarvisapp.smarthome.init.JsonFields;
+
+import static org.rch.jarvisapp.smarthome.init.enums.FieldTypes.*;
 
 @Data
 @FieldDefaults(level=AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = true)
 public class Light extends Device {
-    public static final String className = "light";
 
-    public static final String relayNamePrefix = "SW_RELAY";
-    public static final String relayPortPrefix = "K";
+    @JsonProperty
+    String name;
 
-    String relayName;
-    String relayPort;
+    @JsonProperty
     Integer row;
+
+    @JsonProperty
     Integer priority;
 
-    public Light(Place placement, String name, String relayName, String relayPort, Integer row, Integer priority){
-        super(placement,name);
-        this.relayName = relayNamePrefix + relayName;
-        this.relayPort = relayPortPrefix + relayPort;
-        this.row = row;
-        this.priority = priority;
+    @JsonCreator
+    public Light(JsonFields fields){
+        super(fields.getAsString(PLACE), fields.getAsInteger(ID));
+
+        name = fields.getAsString(NAME);
+        row = fields.getAsInteger(ROW);
+        priority = fields.getAsInteger(PRIORITY);
     }
 }

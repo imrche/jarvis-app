@@ -13,14 +13,23 @@ public enum DeviceKeys {
     priority,
     sensorType,
     protocol,
-    topicId
+    topicId,
+    id
     ;
 
-    public String get(Map<String,Object> data){
+    public String getFrom(Map<String,Object> data) throws Exception {
         if (data.containsKey(name()))
             return data.get(name()).toString();
         else
+            throw new Exception("Отсутствует обязательное значение " + name() + "!");
+    }
+
+    public String getFrom(Map<String,Object> data, boolean exceptionSuppress) {
+        try {
+            return getFrom(data);
+        } catch (Exception e){
             return null;
+        }
     }
 
     public Integer getInt(Map<String,Object> data){

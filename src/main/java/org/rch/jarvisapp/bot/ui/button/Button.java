@@ -4,9 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.cache.ActionCache;
-import org.rch.jarvisapp.bot.dataobject.ActionData;
+import org.rch.jarvisapp.bot.actions.Action;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 @Data
@@ -14,19 +12,17 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 @EqualsAndHashCode(callSuper = true)
 public class Button extends InlineKeyboardButton {
     boolean visible = true;
-
-    public ActionCache getCache(){
-        return AppContextHolder.getActionCache();
-    }
-
-    public Button(String name, ActionData data){
-        setText(name);
-        setCallbackData(getCache().setCallBack(data).toString());
-    }
+    Action action;
 
     public Button(String name, String data){
         setText(name);
         setCallbackData(data);
+    }
+
+    public Button(String name, Action data){
+        setText(name);
+        action = data;
+        setCallbackData(data.caching());
     }
 
     public Button() {

@@ -5,9 +5,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.dataobject.ActionData;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.enums.ActionType;
+import org.rch.jarvisapp.bot.actions.lights.ReverseLightAction;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
@@ -17,7 +16,7 @@ import org.rch.jarvisapp.smarthome.devices.Light;
 @EqualsAndHashCode(callSuper = true)
 public class LightButton extends Button{
     Light light;
-    String state;
+    //String state;
     Boolean state2;
 
     DeviceCommandData patternCD;
@@ -25,7 +24,7 @@ public class LightButton extends Button{
     public LightButton(Light light){
         super();
         this.light = light;
-        patternCD = new DeviceCommandData().addDevice(light.getRelayName(), light.getRelayPort());
+        patternCD = new DeviceCommandData().addDevice(light.getId());
     }
 
     public LightButton setCaption() {
@@ -45,7 +44,7 @@ public class LightButton extends Button{
     public void getCurrentState(){
         Api api = AppContextHolder.getApi();
         DeviceCommandData cd = api.getStatusLight(patternCD);
-        state2 = cd.getDeviceBooleanValue(light.getRelayName(), light.getRelayPort());
+        state2 = cd.getDeviceBooleanValue(light.getId());
     }
 
 /*    public Button refresh(){
@@ -61,7 +60,7 @@ public class LightButton extends Button{
         if (!withoutState)
             getCurrentState();
         setCaption();
-        setCallbackData(getCache().setCallBack(new ActionData(ActionType.reverseLight, light.getPlacement().getCode(), patternCD)).toString());
+        setCallbackData(new ReverseLightAction(patternCD).caching());
 
         return this;
     }

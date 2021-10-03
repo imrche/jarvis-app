@@ -2,9 +2,9 @@ package org.rch.jarvisapp.utils;
 
 import lombok.SneakyThrows;
 import org.rch.jarvisapp.bot.MessageBuilder;
-import org.rch.jarvisapp.bot.enums.Settings;
+import org.rch.jarvisapp.bot.enums.SettingsList;
 import org.rch.jarvisapp.bot.enums.Stickers;
-import org.rch.jarvisapp.bot.services.SettingService;
+import org.rch.jarvisapp.bot.settings.Settings;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 public class LiveProbe extends Thread {
     private final Api api;
 
-    private final SettingService settingService;
+    private final Settings settings;
     private boolean isDown;
     private final MessageBuilder messageBuilder;
 
-    public LiveProbe(Api api, MessageBuilder messageBuilder, SettingService settingService){
+    public LiveProbe(Api api, MessageBuilder messageBuilder, Settings settings){
         this.api = api;
         this.messageBuilder = messageBuilder;
-        this.settingService = settingService;
+        this.settings = settings;
         setDaemon(true);
     }
 
     private String getLiveProbeSetting(){
-        return settingService.tmpSettings.get(Settings.liveProbeTiming.name()).toString();
+        return settings.getSetting(SettingsList.liveProbeTiming).toString();
     }
 
     @SneakyThrows

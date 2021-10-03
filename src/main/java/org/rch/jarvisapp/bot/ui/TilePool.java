@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.enums.BotCommand;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
+import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +22,7 @@ public class TilePool {
     Map<Integer, DeviceCommandData> feedBackLink = new HashMap<>();
 
     public Tile build(BotCommand command){
-        Tile tile = new Tile(command.getDescription(),new KeyBoard(command));
+        Tile tile = new Tile(command.getDescription(),new MenuKeyBoard(command));
         tileList.add(tile);
         return tile;
     }

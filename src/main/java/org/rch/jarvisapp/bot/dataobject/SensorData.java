@@ -7,12 +7,12 @@ import org.rch.jarvisapp.smarthome.devices.Sensor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SensorData extends JSONObject {
-    public static final String DETAIL = "detail";
+public class SensorData extends JSONArray {
+    public static final String ID = "id";
+    public static final String VALUE = "value";
 
     public SensorData(){
         super();
-        put(DETAIL, new JSONArray());
     }
 
     public SensorData(String str){
@@ -20,27 +20,38 @@ public class SensorData extends JSONObject {
     }
 
     public void addSensor(Sensor sensor){
-        Map<String,String> object = new HashMap<>();
-        object.put("protocol", sensor.getProtocol().name());
-        object.put("type", sensor.getSensorType().name());
-        object.put("topic", sensor.getTopicId());
-        object.put("value", "");
+        Integer id = sensor.getId();
 
-        ((JSONArray)this.get(DETAIL)).put(object);
+        if (getSensorById(id) != null)
+            return;
+
+        JSONObject obj = new JSONObject();
+
+        obj.put(ID, id);
+        obj.put(VALUE, "");
+
+        put(obj);
     }
+
+
+    private JSONObject getSensorById(Integer id){
+        for(Object o : this){
+            if (((JSONObject)o).get(ID) == id)
+                return (JSONObject)o;
+        }
+        return null;
+    }
+
 
     public String getSensorValue(Sensor sensor){
-        for (Object object : ((JSONArray)this.get(DETAIL))){
-            JSONObject obj = ((JSONObject)object);
-            if (sensor.getProtocol().name().equals(obj.get("protocol")) &&
-                    sensor.getSensorType().name().equals(obj.get("type")) &&
-                    sensor.getTopicId().equals(obj.get("topic"))
-            ) {
-                return obj.get("value").toString();
-            }
-        }
-        return "";
-    }
+        Integer id = sensor.getId();
+        JSONObject obj = getSensorById(id);
 
-//    private boolean comp
+        if (obj == null)
+            return "";
+        //    throw new Exception();
+        //todo
+
+        return obj.get(VALUE).toString();
+    }
 }

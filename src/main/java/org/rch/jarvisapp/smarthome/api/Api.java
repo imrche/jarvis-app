@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.apache.http.HttpStatus;
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.utils.NetUtil;
@@ -21,12 +21,14 @@ public class Api {
     String ip;
     String port;
 
-    final String STATUS_LIGHT = "/status/light";
-    final String STATUS_SENSOR = "/status/sensors";
-    final String SET_LIGHT = "/set/light";
+    final String STATUS_LIGHT = "/v2/status/light2";
+    final String STATUS_SENSOR = "/v2/status/sensors2";
+    final String SET_LIGHT = "/v2/set/light2";
     final String SET_GATE = "/set/gate";
     final String SET_UPD_MESSAGE = "/set/updatingMessage";
-    final String STUFF_INIT = "/objectsinit";
+
+    final String PLACES_INIT = "/areas";//todo places
+    final String DEVICES_INIT = "/devices";
 
     private String getURL() {
         return proto + "://" + ip + ":" + port;
@@ -36,14 +38,21 @@ public class Api {
         return String.valueOf(HttpStatus.SC_OK).equals(NetUtil.sendGET(getURL()).get(NetUtil.STATUS));
     }
 
-    public JSONObject getHomeStuff(){
-        String response = NetUtil.sendGET(getURL() + STUFF_INIT).get(NetUtil.RESPONSE);
-        return new JSONObject(response);
+    public JSONArray getPlaces(){
+        String response = NetUtil.sendGET(getURL() + PLACES_INIT).get(NetUtil.RESPONSE);
+        //System.out.println("1 - "+response);
+        return new JSONArray(response);
+    }
+
+    public JSONArray getDevices(){
+        String response = NetUtil.sendGET(getURL() + DEVICES_INIT).get(NetUtil.RESPONSE);
+        //System.out.println("2 - "+response);
+        return new JSONArray(response);
     }
 
     public DeviceCommandData getStatusLight(DeviceCommandData req) {
         String response = NetUtil.sendPOST(getURL() + STATUS_LIGHT, req.toString()).get(NetUtil.RESPONSE);
-
+        System.out.println("3");
         return new DeviceCommandData(response);
     }
 

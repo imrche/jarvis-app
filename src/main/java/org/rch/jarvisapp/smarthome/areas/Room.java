@@ -1,9 +1,17 @@
 package org.rch.jarvisapp.smarthome.areas;
 
-public class Room extends Place {
-    public static final String className = "room";
+import com.fasterxml.jackson.annotation.JsonCreator;
+import org.rch.jarvisapp.smarthome.init.JsonFields;
 
-    public Room(String code, String name, Place parent) {
-        super(code, name, parent);
+import static org.rch.jarvisapp.smarthome.init.enums.FieldTypes.*;
+
+public class Room extends Place {
+    @JsonCreator
+    public Room(JsonFields fields) {
+        super(
+                fields.getAsString(CODE),
+                fields.getAsString(NAME),
+                fields.getAsString(PARENT)
+        );
     }
 }

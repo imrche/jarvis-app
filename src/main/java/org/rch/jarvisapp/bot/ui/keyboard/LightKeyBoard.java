@@ -1,9 +1,9 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.dataobject.ActionData;
+import org.rch.jarvisapp.bot.actions.lights.SetLight;
+import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.enums.ActionType;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
@@ -15,20 +15,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LightKeyBoard extends KeyBoard{
-    private List<Button> groupButton = new ArrayList<>();
+    private List<Button> groupButtonRow = new ArrayList<>();
+    private List<Button> additionalPropertiesButtonRow = new ArrayList<>();
 
     public static final String ON = "ON";
     public static final String OFF = "OFF";
+    public static final String ADD = "Дополнительно";
 
     public LightKeyBoard() {
+        this("");//todo
+    }
+
+    public LightKeyBoard(String place){
         super();
-        groupButton.add(new Button("[Весь свет]", CommonCallBack.empty.name()));
-        groupButton.add(new Button(ON, CommonCallBack.empty.name()));
-        groupButton.add(new Button(OFF, CommonCallBack.empty.name()));
+        groupButtonRow.add(new Button("[Весь свет]", CommonCallBack.empty.name()));
+        groupButtonRow.add(new Button(ON, CommonCallBack.empty.name()));
+        groupButtonRow.add(new Button(OFF, CommonCallBack.empty.name()));
+        additionalPropertiesButtonRow.add(new Button(ADD, new ShowAdditionalPropertiesAction(place)));
     }
 
     private Button getGroupButton(String state){
-        for (Button button : groupButton)
+        for (Button button : groupButtonRow)
             if (state.equals(button.getText()))
                 return button;
 
@@ -41,15 +48,15 @@ public class LightKeyBoard extends KeyBoard{
         for (Button button : getButtonsList())
             if (button instanceof LightButton) {
                 Light light = ((LightButton) button).getLight();
-                cmd.addDevice(light.getRelayName(), light.getRelayPort());
+                cmd.addDevice(light.getId());
             }
-
-        getGroupButton(ON).setCallbackData(new ActionData(ActionType.setLight, cmd.setAllDevicesValue("1")).caching());
-        getGroupButton(OFF).setCallbackData(new ActionData(ActionType.setLight,cmd.setAllDevicesValue("0")).caching());
+//todo если лампа одна, то не делать общ кнопки
+        getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(1)).caching());
+        getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(0)).caching());
 
         setVisibleGroupButton();
 
-        return groupButton.stream().filter(Button::isVisible).collect(Collectors.toList());
+        return groupButtonRow.stream().filter(Button::isVisible).collect(Collectors.toList());
     }
 
     private void setVisibleGroupButton(){
@@ -84,10 +91,11 @@ public class LightKeyBoard extends KeyBoard{
 
         if (!dcdPattern.isEmpty()) {
             DeviceCommandData dcdResponse = AppContextHolder.getApi().getStatusLight(dcdPattern);
+            //todo проверку на то что вернулись все запрошенные
             for (Button button : getButtonsList()) {
                 if (button instanceof LightButton) {
                     LightButton btn = (LightButton) button;
-                    btn.setState2(dcdResponse.getDeviceBooleanValue(btn.getLight().getRelayName(), btn.getLight().getRelayPort()));
+                    btn.setState2(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
                     btn.setCaption();
                 }
             }
@@ -100,11 +108,13 @@ public class LightKeyBoard extends KeyBoard{
     public List<List<InlineKeyboardButton>> getKeyboard() {
         List<List<InlineKeyboardButton>> kb = super.getKeyboard();
 
-        for (Button button : getButtonsList())
+        for (Button button : getButtonsList()) {
             if (button instanceof LightButton) {
                 kb.add(new ArrayList<>(prepareGroupButton()));
+                kb.add(new ArrayList<>(additionalPropertiesButtonRow));
                 break;
             }
+        }
 
         setKeyboard(kb);
         return kb;

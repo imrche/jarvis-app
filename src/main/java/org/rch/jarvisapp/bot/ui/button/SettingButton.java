@@ -5,24 +5,24 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.dataobject.ActionData;
-import org.rch.jarvisapp.bot.enums.Settings;
+import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.enums.SettingsList;
 
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = true)
 public class SettingButton extends Button{
-    Settings settings;
+    SettingsList settingsList;
 
-    public SettingButton(Settings settings, ActionData actionData) {
-        super("",actionData);
-        this.settings = settings;
+    public SettingButton(SettingsList settingsList, Action action) {
+        super("",action);
+        this.settingsList = settingsList;
         setCaption();
     }
 
     public void setCaption(){
-        setText(settings.getDescription() + "   ->   " + AppContextHolder.getSettingService().tmpSettings.get(settings.name()).toString());
+        setText(settingsList.getDescription() + "   ->   " + AppContextHolder.getSettings().getSetting(settingsList).toString());
     }
 
     @Override

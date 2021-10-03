@@ -4,9 +4,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
-import org.rch.jarvisapp.bot.dataobject.ActionData;
-import org.rch.jarvisapp.bot.enums.BotCommand;
-import org.rch.jarvisapp.bot.enums.Menu;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -85,7 +82,7 @@ public class KeyBoard extends InlineKeyboardMarkup {
             button.refresh();
     }
 
-    public KeyBoard(BotCommand botCommand){
+/*    public KeyBoard(BotCommand botCommand){
         for (Menu menuItem : Menu.values()){
             if (menuItem.isPartOf(botCommand)){
                 if (menuItem.getActionType() != null) {
@@ -100,5 +97,5 @@ public class KeyBoard extends InlineKeyboardMarkup {
                     addButton(menuItem.getRow(), new Button(menuItem.getDescription(), menuItem.getProduceCommand().name()));
             }
         }
-    }
+    }*/
 }

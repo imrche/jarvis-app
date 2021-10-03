@@ -7,13 +7,12 @@ import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
-import org.rch.jarvisapp.smarthome.devices.Gate;
-import org.rch.jarvisapp.smarthome.devices.Light;
 import org.rch.jarvisapp.smarthome.devices.Sensor;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Data
@@ -26,6 +25,14 @@ public class SmartHome {
 
     public SmartHome(Api api){
         this.api = api;
+    }
+
+    public void addDevice(Device device){
+        devices.add(device);
+    }
+
+    public void addPlace(Place place){
+        places.add(place);
     }
 
 
@@ -57,17 +64,6 @@ public class SmartHome {
         return result;
     }
 
-    public List<Light> getLights(String place){
-        Place parentPlace = getPlaceByCode(place);
-        List<Light> result = new ArrayList<>();
-
-        for (Device device : devices)
-            if (device instanceof Light && device.getPlacement() == parentPlace)
-                result.add((Light) device);
-
-        return result;
-    }
-
     public List<Sensor> getSensors(SensorTypes sensorTypes){
         List<Sensor> result = new ArrayList<>();
 
@@ -78,33 +74,21 @@ public class SmartHome {
         return result;
     }
 
-    public List<Sensor> getSensors(String place){
-        Place parentPlace = getPlaceByCode(place);
-        List<Sensor> result = new ArrayList<>();
-
-        for (Device device : devices)
-            if (device instanceof Sensor && device.getPlacement() == parentPlace)
-                result.add((Sensor) device);
-
-        return result;
+    public <T extends Device> List<T> getDevicesByType(Class<T> type, String place){
+        return getDevicesByType(type)
+                .stream()
+                .filter(device -> device.getPlacement() == getPlaceByCode(place))
+                .collect(Collectors.toList());
     }
 
-/*   public <T, clazz> List<T> getDevices(Class<T> clazz){
+
+    public <T extends Device> List<T> getDevicesByType(Class<T> type){
         List<T> result = new ArrayList<>();
-        for (Device device : devices){
-            if (device instanceof )
-            result.add(clazz);
-        }
-        return new T();
 
-    }*/
+        for (Device device : devices)
+            if (type.isInstance(device))
+                result.add(type.cast(device));
 
-    public List<Gate> getGates(){
-        List<Gate> result = new ArrayList<>();
-        for (Device device : devices){
-            if (device instanceof Gate)
-                result.add((Gate)device);
-        }
         return result;
     }
 }
