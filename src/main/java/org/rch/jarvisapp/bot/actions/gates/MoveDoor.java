@@ -5,6 +5,7 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.JarvisBot;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
+import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.devices.Gate;
@@ -12,27 +13,23 @@ import org.rch.jarvisapp.smarthome.devices.Gate;
 public class MoveDoor implements Action, DataContained {
     SmartHome smartHome = AppContextHolder.getSH();
     JarvisBot bot = AppContextHolder.getBot();
-    String data;
+    GateData data;
 
-    public enum Direction{
-        open, close
-    }
-
-    public MoveDoor(Gate gate, Direction direction) {
-        data = new JSONObject()
-                .put("gate", gate.getCode())
-                .put("action", direction.name()).toString();
+    public MoveDoor(Gate gate, GateData.ActionValue action) {
+        data = new GateData();
+        data.addGate(gate,action);
     }
 
     @Override
     public void run(Tile tile) {
-        JSONObject response = new JSONObject(smartHome.getApi().setGatesAction(data));
-        bot.getMessageBuilder().popupAsync(bot.getLastCallBackId(), response.getString("message"));
+        GateData response = smartHome.getApi().setGatesAction(data);
+        //todo
+        //bot.getMessageBuilder().popupAsync(bot.getLastCallBackId(), response.getGateMessage());
     }
 
     @Override
     public Action setData(Object data) {
-        this.data = data.toString();
+        this.data = (GateData)data;
         return this;
     }
 

@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.bot.dataobject.WindowData;
 import org.rch.jarvisapp.utils.NetUtil;
@@ -26,6 +27,7 @@ public class Api {
     final String STATUS_VALVE = "/v2/status/valve";
     final String STATUS_SENSOR = "/v2/status/sensors2";
     final String STATUS_WINDOW = "/v2/status/openings";
+    final String STATUS_GATE = "/status/gate";
     final String SET_LIGHT = "/v2/set/light2";
     final String SET_DEVICE = "/v2/set/device";
     final String SET_VALVE = "/v2/set/valve";
@@ -85,6 +87,16 @@ public class Api {
     public String setGatesAction(String req) {
         String response = NetUtil.sendPOST(getURL() + SET_GATE, req).get(NetUtil.RESPONSE);
         return response;
+    }
+
+    public GateData setGatesAction(GateData req) {
+        String response = NetUtil.sendPOST(getURL() + SET_GATE, req.toString()).get(NetUtil.RESPONSE);
+        return new GateData(response);
+    }
+
+    public GateData getStatusGates(GateData req) {
+        String response = NetUtil.sendPOST(getURL() + STATUS_GATE, req.toString()).get(NetUtil.RESPONSE);
+        return new GateData(response);
     }
 
     public SensorData getStatusSensor(SensorData req) {
