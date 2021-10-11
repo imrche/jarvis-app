@@ -1,6 +1,7 @@
 package org.rch.jarvisapp;
 
 import org.rch.jarvisapp.bot.JarvisBot;
+import org.rch.jarvisapp.smarthome.init.HomeInitializer;
 import org.rch.jarvisapp.utils.LiveProbe;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +20,13 @@ public class JarvisAppApplication {
 		try {
 			bot.setWebhook(bot.getBotPath(),null);
 		} catch (TelegramApiRequestException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			HomeInitializer initializer = context.getBean(HomeInitializer.class);
+			initializer.init();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

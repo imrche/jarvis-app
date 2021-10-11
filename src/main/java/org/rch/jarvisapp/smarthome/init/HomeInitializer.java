@@ -18,6 +18,9 @@ import java.util.Locale;
 @Service
 public class HomeInitializer {
 
+    Api api;
+    SmartHome smartHome;
+
     private Class<?> convert2class(String type) throws UnknownDeviceTypeException {
         switch (type){
             //for places
@@ -43,14 +46,21 @@ public class HomeInitializer {
 
 
 //todo подумать, может стоит перенести в рантайм
-    public HomeInitializer(Api api, SmartHome smartHome) throws Exception {
+    public HomeInitializer(Api api, SmartHome smartHome) {
+        this.api = api;
+        this.smartHome = smartHome;
 
+    }
+
+    public void init() throws Exception {
         if (!api.isOnline())
             throw new Exception("Controller is unreachable!");
 
         final ObjectMapper mapper = new ObjectMapper();
         JSONArray places = api.getPlaces();
         JSONArray devices = api.getDevices();
+
+        smartHome.clearData();
 
         //todo обработать отсутствие ответа
         if (!places.isEmpty()) {

@@ -35,6 +35,10 @@ public class SmartHome {
         places.add(place);
     }
 
+    public void clearData(){
+        devices.clear();
+        places.clear();
+    }
 
     public Place getPlaceByCode(String code){
         for (Place place : places){
