@@ -1,17 +1,17 @@
 package org.rch.jarvisapp.bot.ui;
 
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.json.JSONArray;
 import org.rch.jarvisapp.bot.enums.BotCommand;
-import org.rch.jarvisapp.bot.ui.button.Button;
-import org.rch.jarvisapp.bot.ui.button.LightButton;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
+import org.rch.jarvisapp.smarthome.devices.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class TilePool {
@@ -19,7 +19,7 @@ public class TilePool {
     Api api;
 
     public List<Tile> tileList = new ArrayList<>();
-    Map<Integer, DeviceCommandData> feedBackLink = new HashMap<>();
+    Map<Integer, List<Integer>> feedBackLink = new HashMap<>();
 
     public Tile build(BotCommand command){
         Tile tile = new Tile(command.getDescription(),new MenuKeyBoard(command));
@@ -41,18 +41,19 @@ public class TilePool {
         if (tile == null)
             return;
 
-        DeviceCommandData dcdPattern = new DeviceCommandData();
+        List<Integer> listDevice = new ArrayList<>();
         for (KeyBoard kb : tile.content){
-            for (Button button : kb.getButtonsList()){
-                if (button instanceof LightButton)
-                    dcdPattern.addDevices(((LightButton) button).getPatternCD());
-            }
+            if (kb instanceof DeviceContainer)
+                listDevice.addAll(((DeviceContainer)kb).getDeviceList().stream().map(Device::getId).collect(Collectors.toList()));
         }
 
-        if (!dcdPattern.isEmpty()) {
-            if (!feedBackLink.containsKey(messageId) || !feedBackLink.get(messageId).equals(dcdPattern)) {
-                feedBackLink.put(messageId, dcdPattern);
-                api.setUpdatingMessage("{\"" + messageId.toString() + "\" : " + dcdPattern + "}");
+        listDevice = listDevice.stream().distinct().collect(Collectors.toList());
+
+        if(!listDevice.isEmpty()){
+            if (!feedBackLink.containsKey(messageId) || !feedBackLink.get(messageId).equals(listDevice)) {
+                feedBackLink.put(messageId, listDevice);
+                JSONArray arr = new JSONArray(listDevice);
+                api.setUpdatingMessage("{\"" + messageId.toString() + "\" :"  + arr.toString() + "}");
             }
         } else if (feedBackLink.containsKey(messageId)) {
             clearFeedBack(messageId);

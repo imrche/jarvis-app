@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-public class GateKeyBoard extends KeyBoard{
+public class GateKeyBoard extends KeyBoard {
 
     GateHeaderButton headerBtn;
     private final List<Button> fullControlButtonRow = new ArrayList<>();
@@ -25,8 +25,8 @@ public class GateKeyBoard extends KeyBoard{
     public static final String OFF = "Закрыть";
     public static final String CLICK = "Щелк";
 
-    GateData.StatusValue status;
-    Gate gate;
+    private GateData.StatusValue status;
+    private final Gate gate;
 
     public GateKeyBoard(Gate gate){
         super();
@@ -53,6 +53,9 @@ public class GateKeyBoard extends KeyBoard{
         this.status = response.getGateStatus(gate);
     }
 
+    public Gate getGate() {
+        return gate;
+    }
 
     @Override
     public void refresh() {
@@ -70,5 +73,4 @@ public class GateKeyBoard extends KeyBoard{
         setKeyboard(kb);
         return kb;
     }
-
 }

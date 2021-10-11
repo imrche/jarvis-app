@@ -6,8 +6,10 @@ import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
+import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Light;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LightKeyBoard extends KeyBoard{
+public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     private List<Button> groupButtonRow = new ArrayList<>();
     private List<Button> additionalPropertiesButtonRow = new ArrayList<>();
 
@@ -122,6 +124,18 @@ public class LightKeyBoard extends KeyBoard{
 
         setKeyboard(kb);
         return kb;
+    }
+
+    @Override
+    public List<Device> getDeviceList() {
+        List<Device> list = new ArrayList<>();
+
+        for (Button button : getButtonsList()) {
+            if (button instanceof LightButton)
+                list.add(((LightButton)button).getLight());
+        }
+
+        return list;
     }
 }
 
