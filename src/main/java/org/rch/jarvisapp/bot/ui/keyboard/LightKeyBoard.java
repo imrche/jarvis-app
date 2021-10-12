@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LightKeyBoard extends KeyBoard implements DeviceContainer {
-    private List<Button> groupButtonRow = new ArrayList<>();
-    private List<Button> additionalPropertiesButtonRow = new ArrayList<>();
+    private final List<Button> groupButtonRow = new ArrayList<>();
+    private final List<Button> additionalPropertiesButtonRow = new ArrayList<>();
 
     public static final String ON = "ON";
     public static final String OFF = "OFF";
@@ -54,15 +54,18 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
                 cmd.addDevice(light.getId());
             }
 //todo если лампа одна, то не делать общ кнопки
-        getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(1)).caching());
-        getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(0)).caching());
+        if (cmd.getDeviceCount() > 1) {
+            getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(1)).caching());
+            getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(0)).caching());
 
-        setVisibleGroupButton();
+            defineVisibilityGroupButton();
+        } else
+            hideGroupButton();
 
         return groupButtonRow.stream().filter(Button::isVisible).collect(Collectors.toList());
     }
 
-    private void setVisibleGroupButton(){
+    private void defineVisibilityGroupButton(){
         Button btnOn = getGroupButton(ON);
         Button btnOff = getGroupButton(OFF);
         btnOn.setVisible(true);
@@ -74,7 +77,7 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
         for (Button button : getButtonsList()) {
             countButton++;
 
-            if (((LightButton) button).getState())
+            if (((LightButton) button).getStatus())
                 countOn++;
         }
 
@@ -82,6 +85,11 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
             btnOff.setVisible(false);
         if (countButton == countOn)
             btnOn.setVisible(false);
+    }
+
+    private void hideGroupButton(){
+        getGroupButton(ON).setVisible(false);
+        getGroupButton(OFF).setVisible(false);
     }
 
     @Override
@@ -99,14 +107,14 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
                 if (button instanceof LightButton) {
                     LightButton btn = (LightButton) button;
                     try {
-                        btn.setState(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
+                        btn.setStatus(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
                     } catch (DeviceStatusIsUnreachable e) {
-                        btn.setState(null);
+                        btn.setStatus(null);
                     }
                     btn.setCaption();
                 }
             }
-            setVisibleGroupButton();
+            defineVisibilityGroupButton();
         }
     }
 

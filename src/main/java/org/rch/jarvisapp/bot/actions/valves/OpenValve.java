@@ -4,6 +4,6 @@ import org.rch.jarvisapp.smarthome.devices.Valve;
 
 public class OpenValve extends ChangeStateValve {
     public OpenValve(Valve valve) {
-        super(valve,1);
+        super(valve,OPEN_VALVE);
     }
 }

@@ -4,13 +4,15 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.ui.Tile;
-import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Valve;
 
 public class ChangeStateValve implements Action {
-    Api api = AppContextHolder.getApi();
+    protected static final int OPEN_VALVE = 1;
+    protected static final int CLOSE_VALVE = 0;
+
     Valve valve;
     int direction;
+
     public String qwe;
 
     public ChangeStateValve(Valve valve, int direction) {
@@ -20,7 +22,7 @@ public class ChangeStateValve implements Action {
 
     @Override
     public void run(Tile tile){
-        api.setStatusValve(new DeviceCommandData().addDevice(valve.getId(),direction));
+        AppContextHolder.getApi().setStatusValve(new DeviceCommandData().addDevice(valve.getId(),direction));
         tile.refresh();
     }
 

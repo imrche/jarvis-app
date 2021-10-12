@@ -15,7 +15,7 @@ public class Button extends InlineKeyboardButton {
     Action action;
 
     public Button(String name, String data){
-        setText(name);
+        setCaption(name);
         setCallbackData(data);
     }
 
@@ -29,5 +29,9 @@ public class Button extends InlineKeyboardButton {
     }
 
     public void refresh(){
+    }
+
+    public void setCaption(String name){
+        setText(name);
     }
 }

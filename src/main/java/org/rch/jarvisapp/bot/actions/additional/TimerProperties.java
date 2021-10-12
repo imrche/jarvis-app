@@ -33,7 +33,7 @@ public class TimerProperties implements Action, RunnableByPlace {
         List<Light> lightList = smartHome.getDevicesByType(Light.class, place);
         lightList.sort(new LightComparator());
         for (Light device : lightList)
-            kbLight.addButton(device.getRow(), new LightButton(device).build(true));
+            kbLight.addButton(device.getRow(), new LightButton(device));
 
         tile.update()
                 .setCaption("Таймеры")

@@ -78,7 +78,7 @@ public class Tile{
     }
 
 
-    public Tile setKeyboards(List<KeyBoard> keyBoard){
+    public Tile setKeyboard(List<KeyBoard> keyBoard){
         content.clear();
         content.addAll(keyBoard);
         return this;
@@ -94,7 +94,7 @@ public class Tile{
         //предполагается что после update keyboard будет создан новый, а не изменен старый
         Tile tile = new Tile()
                 .setCaption(caption)
-                .setKeyboards(content)
+                .setKeyboard(content)
                 .setParseMode(parseMode);
 
         historyStack.push(tile);

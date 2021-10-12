@@ -61,6 +61,10 @@ public class DeviceCommandData extends JSONArray {
         return this;
     }
 
+    public int getDeviceCount(){
+        return length();
+    }
+
     public DeviceCommandData addDevice(Integer id){
         return addDevice(id,null);
     }
@@ -97,7 +101,7 @@ public class DeviceCommandData extends JSONArray {
     public void setDeviceValue(Integer id, Boolean newValue){
         setDeviceValue(id, newValue ? 1 : 0);
     }
-
+//todo переехать на итератор
     @Nullable
     public Integer getDeviceValue(Integer id) throws DeviceStatusIsUnreachable {
         for(Object o : this)

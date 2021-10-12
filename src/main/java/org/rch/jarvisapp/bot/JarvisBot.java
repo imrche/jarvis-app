@@ -35,7 +35,7 @@ public class JarvisBot extends TelegramWebhookBot {
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         try {
             //System.out.println("-------------------------------------------------------------------");
-            System.out.println(update);
+            //System.out.println(update);
 
             if (update.hasMessage()) {
                 Message message = update.getMessage();

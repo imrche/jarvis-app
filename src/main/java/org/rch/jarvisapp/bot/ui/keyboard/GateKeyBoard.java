@@ -1,21 +1,19 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
-import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.gates.ClickGate;
 import org.rch.jarvisapp.bot.actions.gates.CloseGate;
 import org.rch.jarvisapp.bot.actions.gates.OpenGate;
-import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.ui.button.Button;
-import org.rch.jarvisapp.bot.ui.button.GateHeaderButton;
+import org.rch.jarvisapp.bot.ui.button.GateButton;
 import org.rch.jarvisapp.smarthome.devices.Gate;
+import org.rch.jarvisapp.smarthome.devices.status.GateStatus;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GateKeyBoard extends KeyBoard {
-
-    GateHeaderButton headerBtn;
+    private final GateButton headerBtn;
     private final List<Button> fullControlButtonRow = new ArrayList<>();
     private final List<Button> simpleClickButtonRow = new ArrayList<>();
 
@@ -25,7 +23,6 @@ public class GateKeyBoard extends KeyBoard {
     public static final String OFF = "Закрыть";
     public static final String CLICK = "Щелк";
 
-    private GateData.StatusValue status;
     private final Gate gate;
 
     public GateKeyBoard(Gate gate){
@@ -35,22 +32,13 @@ public class GateKeyBoard extends KeyBoard {
         simpleClickButtonRow.add(new Button(CLICK, new ClickGate(gate)));
 
         this.gate = gate;
-        headerBtn = new GateHeaderButton(gate);
+        headerBtn = new GateButton(gate);
 
         addButton(1, headerBtn);
     }
 
     private void changeControlButton(){
-        currentCommandData = GateData.StatusValue.NA.equals(status) ? simpleClickButtonRow : fullControlButtonRow;
-    }
-
-    private void updateStatus(){
-        GateData reqData = new GateData();
-        reqData.addGate(gate);
-
-        GateData response = AppContextHolder.getApi().getStatusGates(reqData);
-
-        this.status = response.getGateStatus(gate);
+        currentCommandData = GateStatus.NA.equals(headerBtn.getStatus()) ? simpleClickButtonRow : fullControlButtonRow;
     }
 
     public Gate getGate() {
@@ -59,8 +47,7 @@ public class GateKeyBoard extends KeyBoard {
 
     @Override
     public void refresh() {
-        updateStatus();
-        headerBtn.setCaption(status);
+        headerBtn.refresh();
         changeControlButton();
     }
 

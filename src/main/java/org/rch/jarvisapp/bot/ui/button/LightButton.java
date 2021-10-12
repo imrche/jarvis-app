@@ -16,55 +16,37 @@ import org.rch.jarvisapp.smarthome.devices.Light;
 @EqualsAndHashCode(callSuper = true)
 public class LightButton extends Button{
     Light light;
-    Boolean state;
+    Boolean status;
 
-    DeviceCommandData patternCD;
+    final DeviceCommandData patternCD = new DeviceCommandData();
 
     public LightButton(Light light){
-        super();
         this.light = light;
-        patternCD = new DeviceCommandData().addDevice(light.getId());
+        patternCD.addDevice(light.getId());
+        setCallbackData(new ReverseLight(patternCD).caching());
     }
 
-    public LightButton setCaption() {
-        super.setText(light.getName() + (state != null ? " " + visualize(state) : ""));
-        return this;
+    public void setCaption() {
+        super.setCaption(light.getName() + " " + visualizeStatus(status));
     }
 
-    public static String visualize(Boolean value){
-        if (value == null) return "?";
+    public static String visualizeStatus(Boolean status){
+        if (status == null) return "[❓]";
 
         String on = "\uD83C\uDF15";
         String off = "\uD83C\uDF11";
 
-        return value ? on : off;
+        return status ? on : off;
     }
 
-    public void getCurrentState(){
-        Api api = AppContextHolder.getApi();
-        DeviceCommandData cd = api.getStatusLight(patternCD);
+    @Override
+    public void refresh() {
+        DeviceCommandData cd = AppContextHolder.getApi().getStatusLight(patternCD);
         try {
-            state = cd.getDeviceBooleanValue(light.getId());
+            status = cd.getDeviceBooleanValue(light.getId());
         } catch (DeviceStatusIsUnreachable e) {
-            state = null;
+            status = null;
         }
-    }
-
-/*    public Button refresh(){
-        getCurrentState();
-        setText(getCaption());
-        return this;
-    }*/
-
-    public Button build(){
-        return build(false);
-    }
-    public Button build(boolean withoutState){
-        if (!withoutState)
-            getCurrentState();
         setCaption();
-        setCallbackData(new ReverseLight(patternCD).caching());
-
-        return this;
     }
 }

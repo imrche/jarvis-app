@@ -3,6 +3,7 @@ package org.rch.jarvisapp.bot.dataobject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rch.jarvisapp.smarthome.devices.Gate;
+import org.rch.jarvisapp.smarthome.devices.status.GateStatus;
 
 public class GateData extends JSONArray {
     public static final String ID = "id";
@@ -16,14 +17,6 @@ public class GateData extends JSONArray {
         close,
         click
     }
-
-    public enum StatusValue{
-        open,
-        close,
-        NA,
-        intermediate
-    }
-
 
     public GateData(){
         super();
@@ -68,16 +61,16 @@ public class GateData extends JSONArray {
     }
 
 
-    public StatusValue getGateStatus(Gate gate){
+    public GateStatus getGateStatus(Gate gate){
         Integer id = gate.getId();
         JSONObject obj = getGateById(id);
 
         if (obj == null)
-            return StatusValue.NA;
+            return GateStatus.NA;
         //    throw new Exception();
         //todo
 
-        return StatusValue.valueOf(obj.get(STATUS).toString());
+        return GateStatus.valueOf(obj.get(STATUS).toString());
     }
 
     public String getGateMessage(Gate gate){

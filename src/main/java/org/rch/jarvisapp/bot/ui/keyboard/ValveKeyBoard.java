@@ -1,14 +1,30 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
+import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.valves.CloseValve;
 import org.rch.jarvisapp.bot.actions.valves.OpenValve;
+import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.rch.jarvisapp.bot.dataobject.GateData;
+import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.DeviceButton;
+import org.rch.jarvisapp.bot.ui.button.ValveButton;
+import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Valve;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
-public class ValveKeyBoard extends KeyBoard{
+import java.util.ArrayList;
+import java.util.List;
+
+public class ValveKeyBoard extends KeyBoard implements DeviceContainer {
+    private ValveButton valveButton;
+    private Integer status;
+
     public ValveKeyBoard(Valve valve){
-        addButton(1, new DeviceButton(valve).build(false));
+        valveButton = new ValveButton(valve);
+
+        addButton(1, valveButton);
         addButton(2, new Button("Открыть", new OpenValve(valve)));
         addButton(2, new Button("Закрыть", new CloseValve(valve)));
     }
@@ -16,8 +32,18 @@ public class ValveKeyBoard extends KeyBoard{
     public ValveKeyBoard() {
     }
 
+
     @Override
     public void refresh() {
+        valveButton.refresh();
 
+    }
+
+    @Override
+    public List<Device> getDeviceList() {
+        List<Device> list = new ArrayList<>();
+        list.add(valveButton.getValve());
+
+        return list;
     }
 }

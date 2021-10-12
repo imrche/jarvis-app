@@ -25,20 +25,16 @@ public class GroupGateKeyBoard extends KeyBoard implements DeviceContainer {
         return list;
     }
 
-
     public void addGate(Gate gate) {
         listGateKB.add(new GateKeyBoard(gate));
     }
-
-
-
 
     @Override
     public void refresh() {
         for (GateKeyBoard gateKB : listGateKB)
             gateKB.refresh();
-
     }
+
     @Override
     public List<List<InlineKeyboardButton>> getKeyboard() {
         refresh();
@@ -49,5 +45,4 @@ public class GroupGateKeyBoard extends KeyBoard implements DeviceContainer {
         setKeyboard(kb);
         return kb;
     }
-
 }

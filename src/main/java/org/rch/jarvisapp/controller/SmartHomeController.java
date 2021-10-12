@@ -32,6 +32,7 @@ public class SmartHomeController {
 
     @PostMapping(value = "/changeStatus")
     public ResponseEntity<?> changeStatus(@RequestBody String data){
+        System.out.println("Обратная связь " + data);
         for (Object obj : new JSONArray(data)){
             try {
                 Integer messageId = Integer.parseInt(obj.toString());
