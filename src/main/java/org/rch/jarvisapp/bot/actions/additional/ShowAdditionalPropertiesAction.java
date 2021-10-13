@@ -32,10 +32,11 @@ public class ShowAdditionalPropertiesAction implements Action, RunnableByPlace {
     public void run(Tile tile) {
         KeyBoard kb = new KeyBoard();
         kb.addButton(1, new Button("Таймеры", new TimerProperties(place)));
-        kb.addButton(1, new Button("2", CommonCallBack.empty.name()));
+        kb.addButton(2, new Button("Цветовые схемы", CommonCallBack.empty.name()));
+        kb.addButton(3, new Button("Активаторы", new ShowSwitchManager(place)));
 
         tile.update()
-                .setCaption("Допничек")
+                .setCaption("Дополнительно")
                 .setKeyboard(kb);
     }
 

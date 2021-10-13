@@ -22,15 +22,17 @@ public class Api {
     String ip;
     String port;
 
-    final String STATUS_LIGHT = "/v2/status/light2";
-    final String STATUS_DEVICE = "/v2/status/device";
-    final String STATUS_VALVE = "/v2/status/valve";
-    final String STATUS_SENSOR = "/v2/status/sensors2";
-    final String STATUS_WINDOW = "/v2/status/openings";
+    final String STATUS_LIGHT = "/status/light";
+    final String STATUS_DEVICE = "/status/device";
+    final String STATUS_VALVE = "/status/valve";
+    final String STATUS_SENSOR = "/status/sensors";
+    final String STATUS_WINDOW = "/status/openings";
     final String STATUS_GATE = "/status/gate";
-    final String SET_LIGHT = "/v2/set/light2";
-    final String SET_DEVICE = "/v2/set/device";
-    final String SET_VALVE = "/v2/set/valve";
+    final String STATUS_SW_MANAGER = "/switchManager/status";
+    final String SET_SW_MANAGER = "/switchManager/set";
+    final String SET_LIGHT = "/set/light";
+    final String SET_DEVICE = "/set/device";
+    final String SET_VALVE = "/set/valve";
     final String SET_GATE = "/set/gate";
     final String SET_UPD_MESSAGE = "/set/updatingMessage";
     final String PLACES_INIT = "/areas";//todo places
@@ -69,6 +71,16 @@ public class Api {
     public DeviceCommandData getStatusValve(DeviceCommandData req) {
         String response = NetUtil.sendPOST(getURL() + STATUS_VALVE, req.toString()).get(NetUtil.RESPONSE);
         return new DeviceCommandData(response);
+    }
+
+    public DeviceCommandData getStatusSwitchManager(DeviceCommandData req) {
+        String response = NetUtil.sendPOST(getURL() + STATUS_SW_MANAGER, req.toString()).get(NetUtil.RESPONSE);
+        return new DeviceCommandData(response);
+    }
+
+
+    public void setStatusSwitchManager(DeviceCommandData req) {
+        NetUtil.sendPOST(getURL() + SET_SW_MANAGER, req.toString());
     }
 
     public void setStatusLight(String req) {
