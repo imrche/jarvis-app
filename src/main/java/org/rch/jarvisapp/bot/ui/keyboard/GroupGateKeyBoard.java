@@ -1,5 +1,8 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.SneakyThrows;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Gate;
@@ -25,19 +28,20 @@ public class GroupGateKeyBoard extends KeyBoard implements DeviceContainer {
         return list;
     }
 
-    public void addGate(Gate gate) {
+    public void addGate(Gate gate) throws HomeApiWrongResponseData {
         listGateKB.add(new GateKeyBoard(gate));
     }
 
     @Override
-    public void refresh() {
+    public void refresh() throws HomeApiWrongResponseData {
         for (GateKeyBoard gateKB : listGateKB)
             gateKB.refresh();
     }
 
+    @SneakyThrows
     @Override
     public List<List<InlineKeyboardButton>> getKeyboard() {
-        refresh();
+        refresh();//todo возможно это плохое место
         List<List<InlineKeyboardButton>> kb = super.getKeyboard();
         for (GateKeyBoard gateKB : listGateKB)
             kb.addAll(gateKB.getKeyboard());

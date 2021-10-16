@@ -27,4 +27,6 @@ public class Gate extends Device{
         name = fields.getAsString(NAME);
     }
 
+    //todo remove
+    public Gate(){}
 }

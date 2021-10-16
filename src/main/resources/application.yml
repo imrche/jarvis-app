@@ -9,3 +9,6 @@ home:
   proto: ${HOME_CONNECTION_PROTOCOL}
   ip: ${HOME_CONNECTION_IP}
   port: ${HOME_CONNECTION_PORT}
+logging:
+  level:
+    org.rch.jarvisapp: FATAL

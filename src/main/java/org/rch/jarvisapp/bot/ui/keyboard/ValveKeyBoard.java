@@ -1,18 +1,13 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
-import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.valves.CloseValve;
 import org.rch.jarvisapp.bot.actions.valves.OpenValve;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.dataobject.GateData;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
-import org.rch.jarvisapp.bot.ui.button.DeviceButton;
 import org.rch.jarvisapp.bot.ui.button.ValveButton;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Valve;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +29,7 @@ public class ValveKeyBoard extends KeyBoard implements DeviceContainer {
 
 
     @Override
-    public void refresh() {
+    public void refresh() throws HomeApiWrongResponseData {
         valveButton.refresh();
 
     }

@@ -6,9 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.additional.ReverseSWManage;
-import org.rch.jarvisapp.bot.actions.lights.ReverseLight;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
 @Data
@@ -18,11 +17,11 @@ public class SwitchManageButton extends Button{
     Light light;
     Boolean status;
 
-    final DeviceCommandData patternCD = new DeviceCommandData();
+    final SwitcherData patternCD = new SwitcherData();
 
     public SwitchManageButton(Light light){
         this.light = light;
-        patternCD.addDevice(light.getId());
+        patternCD.addSwitcher(light);
         setCallbackData(new ReverseSWManage(patternCD).caching());
     }
 
@@ -30,23 +29,27 @@ public class SwitchManageButton extends Button{
         super.setCaption(light.getName() + " " + visualizeStatus(status));
     }
 
-    public static String visualizeStatus(Boolean status){
+    private String visualizeStatus(Boolean status){
         if (status == null) return "[❓]";
+        if (status) {
+            return "[\uD83D\uDFE2]";
+        } else {
+            return "[\uD83D\uDD34]";
+        }
+    }
 
-        String on = "\uD83D\uDFE2";
-        String off = "\uD83D\uDD34";
+    public void setStatus(Boolean status){
+        this.status = status;
+        setCaption();
 
-        return status ? on : off;
     }
 
     @Override
-    public void refresh() {
-        DeviceCommandData cd = AppContextHolder.getApi().getStatusSwitchManager(patternCD);
-        try {
-            status = cd.getDeviceBooleanValue(light.getId());
-        } catch (DeviceStatusIsUnreachable e) {
-            status = null;
-        }
-        setCaption();
+    public void refresh() throws HomeApiWrongResponseData {
+        SwitcherData cd = AppContextHolder.getApi().getStatusSwitchManager(patternCD);
+        setStatus(cd.getDeviceValue(light));
+        //status = cd.getDeviceValue(light);
+
+        //setCaption();
     }
 }

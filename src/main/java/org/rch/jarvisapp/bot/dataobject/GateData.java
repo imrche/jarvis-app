@@ -1,16 +1,29 @@
 package org.rch.jarvisapp.bot.dataobject;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.rch.jarvisapp.smarthome.devices.Gate;
 import org.rch.jarvisapp.smarthome.devices.status.GateStatus;
 
-public class GateData extends JSONArray {
-    public static final String ID = "id";
-    public static final String ACTION = "action";
-    public static final String ACCEPT = "accept";
-    public static final String MESSAGE = "message";
-    public static final String STATUS = "status";
+public class GateData extends DataObject{
+
+    private static class GateElement extends DTOElement {
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public ActionValue action;//todo проверить как пройдет десер
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public String status;
+
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public String message;
+
+        public GateElement() {}
+
+        public GateElement(Integer id) {
+            super(id);
+        }
+    }
 
     public enum ActionValue{
         open,
@@ -18,70 +31,39 @@ public class GateData extends JSONArray {
         click
     }
 
-    public GateData(){
-        super();
+    public GateData(String json) throws JsonProcessingException {
+        super(json, GateElement.class);
     }
 
-/*    public void setAction(Gate gate, ActionValue action){
-        JSONObject obj = getGateById(gate.getId());
-        //todo обработка action null
-        obj.put(ACTION, action.name());
-    }*/
-
-    public GateData(String str){
-        super(str);
+    public GateData() {
     }
 
-    public void addGate(Gate gate){
-        addGate(gate,null);
+    public GateElement addGate(Gate gate, ActionValue action){
+        GateElement element = addGate(gate);
+        element.action = action;
+
+        return element;
     }
 
-    public void addGate(Gate gate,ActionValue action){
-        Integer id = gate.getId();
-
-        if (getGateById(id) != null)
-            return;
-
-        JSONObject obj = new JSONObject();
-
-        obj.put(ID, id);
-        if (action != null)
-            obj.put(ACTION, action.name());
-
-        put(obj);
+    public GateElement addGate(Gate gate){
+        return (GateElement) addDevice(gate, GateElement.class);
     }
-
-
-    private JSONObject getGateById(Integer id){
-        for(Object o : this){
-            if (((JSONObject)o).get(ID) == id)
-                return (JSONObject)o;
-        }
-        return null;
-    }
-
 
     public GateStatus getGateStatus(Gate gate){
-        Integer id = gate.getId();
-        JSONObject obj = getGateById(id);
+        DTOElement e = getDeviceDTOElement(gate);
 
-        if (obj == null)
+        if (e == null)
             return GateStatus.NA;
-        //    throw new Exception();
-        //todo
 
-        return GateStatus.valueOf(obj.get(STATUS).toString());
+        return GateStatus.valueOf(((GateElement)e).status);
     }
 
     public String getGateMessage(Gate gate){
-        Integer id = gate.getId();
-        JSONObject obj = getGateById(id);
+        DTOElement e = getDeviceDTOElement(gate);
 
-        if (obj == null)
-            return "";
-        //    throw new Exception();
-        //todo
+        if (e == null)
+            return null;
 
-        return obj.get(MESSAGE).toString();
+        return ((GateElement)e).message;
     }
 }

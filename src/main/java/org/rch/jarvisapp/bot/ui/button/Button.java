@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 @Data
@@ -28,7 +29,7 @@ public class Button extends InlineKeyboardButton {
     public Button() {
     }
 
-    public void refresh(){
+    public void refresh() throws HomeApiWrongResponseData {
     }
 
     public void setCaption(String name){

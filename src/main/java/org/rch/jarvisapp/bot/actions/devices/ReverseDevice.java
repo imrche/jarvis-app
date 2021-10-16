@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.smarthome.api.Api;
 
@@ -17,7 +18,7 @@ public class ReverseDevice implements Action, DataContained {
     }
 
     @Override
-    public void run(Tile tile){
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         try {
             api.setStatusDevice(api.getStatusDevice(new DeviceCommandData(data)).reverse());
         } catch (DeviceStatusIsUnreachable e) {

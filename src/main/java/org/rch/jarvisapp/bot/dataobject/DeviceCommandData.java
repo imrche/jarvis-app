@@ -127,6 +127,16 @@ public class DeviceCommandData extends JSONArray {
         }
     }
 
+    @Nullable
+    public String getDeviceStringValue(Integer id){
+        for(Object o : this) {
+            if (((JSONObject) o).get(ID) == id)
+                return ((JSONObject) o).get(VALUE).toString();
+        }
+        return null;
+
+    }
+
     public DeviceCommandData reverse() throws DeviceStatusIsUnreachable {
         DeviceCommandData result = this;
         for(Object o : this){

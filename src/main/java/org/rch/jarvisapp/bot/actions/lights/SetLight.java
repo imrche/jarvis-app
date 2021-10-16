@@ -3,6 +3,7 @@ package org.rch.jarvisapp.bot.actions.lights;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.smarthome.api.Api;
 
@@ -11,7 +12,7 @@ public class SetLight implements Action, DataContained {
     String data;
 
     @Override
-    public void run(Tile tile) {
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         api.setStatusLight(data);
         tile.refresh();
     }

@@ -3,6 +3,7 @@ package org.rch.jarvisapp.bot.ui.keyboard;
 import org.rch.jarvisapp.bot.actions.gates.ClickGate;
 import org.rch.jarvisapp.bot.actions.gates.CloseGate;
 import org.rch.jarvisapp.bot.actions.gates.OpenGate;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.GateButton;
 import org.rch.jarvisapp.smarthome.devices.Gate;
@@ -25,7 +26,7 @@ public class GateKeyBoard extends KeyBoard {
 
     private final Gate gate;
 
-    public GateKeyBoard(Gate gate){
+    public GateKeyBoard(Gate gate) throws HomeApiWrongResponseData {
         super();
         fullControlButtonRow.add(new Button(ON, new OpenGate(gate)));
         fullControlButtonRow.add(new Button(OFF, new CloseGate(gate)));
@@ -46,7 +47,7 @@ public class GateKeyBoard extends KeyBoard {
     }
 
     @Override
-    public void refresh() {
+    public void refresh() throws HomeApiWrongResponseData {
         headerBtn.refresh();
         changeControlButton();
     }

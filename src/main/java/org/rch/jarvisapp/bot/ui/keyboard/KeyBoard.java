@@ -1,9 +1,13 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -77,7 +81,7 @@ public class KeyBoard extends InlineKeyboardMarkup {
     public KeyBoard(){
     }
 
-    public void refresh(){
+    public void refresh() throws HomeApiWrongResponseData {
         for (Button button : getButtonsList())
             button.refresh();
     }

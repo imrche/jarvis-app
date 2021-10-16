@@ -11,6 +11,8 @@ import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.areas.Room;
 import org.rch.jarvisapp.smarthome.devices.*;
 import org.rch.jarvisapp.smarthome.init.enums.FieldTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -18,6 +20,7 @@ import java.util.Locale;
 @Service
 public class HomeInitializer {
 
+    Logger logger = LoggerFactory.getLogger(HomeInitializer.class);
     Api api;
     SmartHome smartHome;
 
@@ -68,9 +71,9 @@ public class HomeInitializer {
                 try {
                     smartHome.addPlace((Place) createObject(mapper, obj));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    logger.error("Ошибка в Json",e);
                 } catch (UnknownDeviceTypeException e) {
-                    System.out.println("Зона/помещение " + e.getMessage());
+                    logger.error("Зона/помещение " + e.getMessage(),e);
                 }
         }
 
@@ -79,11 +82,12 @@ public class HomeInitializer {
                 try {
                     smartHome.addDevice((Device) createObject(mapper, obj));
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                    logger.error("Ошибка в Json",e);
                 } catch (UnknownDeviceTypeException e) {
-                    System.out.println("Устройство " + e.getMessage());
+                    logger.error("Устройство " + e.getMessage(),e);
                 }
         }
-        System.out.println("Done!");
+
+        logger.info("DONE! Home was initialized!");
     }
 }

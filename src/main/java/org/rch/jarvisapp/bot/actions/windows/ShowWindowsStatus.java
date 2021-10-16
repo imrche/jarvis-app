@@ -4,16 +4,15 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.RunnableByPlace;
 import org.rch.jarvisapp.bot.actions.sensors.SensorUtils;
-import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.bot.dataobject.WindowData;
 import org.rch.jarvisapp.bot.enums.ParseMode;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.utils.MD;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.areas.Place;
-import org.rch.jarvisapp.smarthome.devices.Sensor;
 import org.rch.jarvisapp.smarthome.devices.Window;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class ShowWindowsStatus implements Action, RunnableByPlace {
     }
 
     @Override
-    public void run(Tile tile) {
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         if (place != null){
             List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 

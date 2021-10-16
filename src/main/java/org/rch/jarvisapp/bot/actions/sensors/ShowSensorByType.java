@@ -1,12 +1,11 @@
 package org.rch.jarvisapp.bot.actions.sensors;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+
 import org.rch.jarvisapp.bot.dataobject.SensorData;
 import org.rch.jarvisapp.bot.enums.ParseMode;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.utils.MD;
 import org.rch.jarvisapp.smarthome.SmartHome;
@@ -28,7 +27,7 @@ public abstract class ShowSensorByType implements Action {
     }
 
     @Override
-    public void run(Tile tile) {
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         List<Sensor> list = smartHome.getSensors(sensorType);
         SensorData responseSD = SensorUtils.getSensorValues(list);
 

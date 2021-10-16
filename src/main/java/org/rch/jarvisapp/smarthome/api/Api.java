@@ -1,14 +1,13 @@
 package org.rch.jarvisapp.smarthome.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.dataobject.GateData;
-import org.rch.jarvisapp.bot.dataobject.SensorData;
-import org.rch.jarvisapp.bot.dataobject.WindowData;
+import org.rch.jarvisapp.bot.dataobject.*;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.utils.NetUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -68,19 +67,20 @@ public class Api {
         return new DeviceCommandData(response);
     }
 
-    public DeviceCommandData getStatusValve(DeviceCommandData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_VALVE, req.toString()).get(NetUtil.RESPONSE);
-        return new DeviceCommandData(response);
+
+
+
+    public SwitcherData getStatusSwitchManager(SwitcherData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_SW_MANAGER, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SwitcherData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Установка вкл/выкл для переключателей - ответ " + response, e);
+        }
     }
 
-    public DeviceCommandData getStatusSwitchManager(DeviceCommandData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_SW_MANAGER, req.toString()).get(NetUtil.RESPONSE);
-        return new DeviceCommandData(response);
-    }
-
-
-    public void setStatusSwitchManager(DeviceCommandData req) {
-        NetUtil.sendPOST(getURL() + SET_SW_MANAGER, req.toString());
+    public void setStatusSwitchManager(SwitcherData req) {
+        NetUtil.sendPOST(getURL() + SET_SW_MANAGER, req.getData());
     }
 
     public void setStatusLight(String req) {
@@ -92,34 +92,55 @@ public class Api {
     public void setStatusDevice(DeviceCommandData req) {
         NetUtil.sendPOST(getURL() + SET_DEVICE, req.toString());
     }
-    public void setStatusValve(DeviceCommandData req) {
-        NetUtil.sendPOST(getURL() + SET_VALVE, req.toString());
+    public void setStatusValve(SwitcherData req) {
+        NetUtil.sendPOST(getURL() + SET_VALVE, req.getData());
     }
 
-    public String setGatesAction(String req) {
-        String response = NetUtil.sendPOST(getURL() + SET_GATE, req).get(NetUtil.RESPONSE);
-        return response;
+    public SwitcherData getStatusValve(SwitcherData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_VALVE, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SwitcherData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус вводных кранов - ответ " + response, e);
+        }
     }
 
-    public GateData setGatesAction(GateData req) {
-        String response = NetUtil.sendPOST(getURL() + SET_GATE, req.toString()).get(NetUtil.RESPONSE);
-        return new GateData(response);
+    public GateData setGatesAction(GateData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + SET_GATE, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new GateData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Установка действия воротам - ответ " + response, e);
+        }
     }
 
-    public GateData getStatusGates(GateData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_GATE, req.toString()).get(NetUtil.RESPONSE);
-        return new GateData(response);
+    public GateData getStatusGates(GateData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_GATE, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new GateData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус ворот - ответ " + response, e);
+        }
     }
 
-    public SensorData getStatusSensor(SensorData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_SENSOR, req.toString()).get(NetUtil.RESPONSE);
-        return new SensorData(response);
+    public SensorData getStatusSensor(SensorData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_SENSOR, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SensorData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус датчиков - ответ " + response, e);
+        }
     }
 
-    public WindowData getStatusWindow(WindowData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_WINDOW, req.toString()).get(NetUtil.RESPONSE);
-        return new WindowData(response);
+    public WindowData getStatusWindow(WindowData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_WINDOW, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new WindowData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус окон - ответ " + response, e);
+        }
     }
+
 
     public void setUpdatingMessage(String request){
         NetUtil.sendPOST(getURL() + SET_UPD_MESSAGE, request);

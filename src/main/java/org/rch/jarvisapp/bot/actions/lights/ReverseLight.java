@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
 import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.smarthome.api.Api;
 
@@ -19,14 +20,14 @@ public class ReverseLight implements Action, DataContained {
     }
 
     @Override
-    public void run(Tile tile){
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         try {
             api.setStatusLight(api.getStatusLight(new DeviceCommandData(data)).reverse());
         } catch (DeviceStatusIsUnreachable e) {
             tile.popup(e.getMessage());
         }
         //todo перенести реверс на сервер (возвращать статус, который получился по итогу)
-        tile.refresh();
+       // tile.refresh();
     }
 
 

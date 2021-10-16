@@ -4,6 +4,7 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.RunnableByPlace;
 
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
@@ -40,7 +41,7 @@ public class ShowLight implements Action, RunnableByPlace {
     }
 
     @Override
-    public void run(Tile tile){
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         if (place != null){
             List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 

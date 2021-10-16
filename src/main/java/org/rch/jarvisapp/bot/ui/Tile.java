@@ -4,6 +4,7 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.MessageBuilder;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.enums.ParseMode;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
@@ -29,17 +30,20 @@ public class Tile{
         stepBackButton.addButton(1, new Button("Назад", CommonCallBack.stepBackTile.name()));
     }
 
-    public Tile refresh(){
+    public Tile refresh() throws HomeApiWrongResponseData {
+        //todo сделать приватной, чтобы избежать вызовов ненужных
         for (KeyBoard kb : content)
             kb.refresh();
 
         return this;
     }
 
-    private KeyBoard getUnionKeyBoard() {
+    private KeyBoard getUnionKeyBoard() throws HomeApiWrongResponseData {
         KeyBoard kb = new KeyBoard();
-        for (KeyBoard keyBoard : content)
+        for (KeyBoard keyBoard : content) {
+            keyBoard.refresh();//todo Убрать. Пока для обновления Активаторов. Иначе падают
             kb.merge(keyBoard.getKeyboard());
+        }
 
         if (historyStack.size()>0)
             kb.merge(stepBackButton);
@@ -52,7 +56,7 @@ public class Tile{
         return this;
     }
 
-    public void publish() {
+    public void publish() throws HomeApiWrongResponseData {
         if (messageId == null)
             messageId = getMessageBuilder().sendAsync(caption, getUnionKeyBoard());
         else
@@ -102,7 +106,7 @@ public class Tile{
         return this;
     }
 
-    public Tile stepBack(){
+    public Tile stepBack() throws HomeApiWrongResponseData {
         Tile t = historyStack.pop();
         this.caption = t.caption;
         this.content = t.content;

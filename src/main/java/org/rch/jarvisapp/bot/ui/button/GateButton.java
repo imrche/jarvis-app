@@ -3,6 +3,7 @@ package org.rch.jarvisapp.bot.ui.button;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.devices.Gate;
 import org.rch.jarvisapp.smarthome.devices.status.GateStatus;
 
@@ -11,11 +12,11 @@ public class GateButton extends Button{
     private final GateData requestStatusData = new GateData();
     private GateStatus status;
 
-    public GateButton(Gate gate){
+    public GateButton(Gate gate) throws HomeApiWrongResponseData {
         super("", CommonCallBack.empty.name());
         this.gate = gate;
         requestStatusData.addGate(gate);
-        refresh();
+        //refresh();
     }
 
     public void setCaption(){
@@ -27,12 +28,12 @@ public class GateButton extends Button{
     }
 
     @Override
-    public void refresh() {
+    public void refresh() throws HomeApiWrongResponseData {//todo часто шлются на инициализации
         updateStatus();
         setCaption();
     }
 
-    private void updateStatus(){
+    private void updateStatus() throws HomeApiWrongResponseData {
         GateData response = AppContextHolder.getApi().getStatusGates(requestStatusData);
         status = response.getGateStatus(gate);
     }

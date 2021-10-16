@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.actions.devices;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.DeviceButton;
 import org.rch.jarvisapp.bot.ui.keyboard.DeviceKeyBoard;
@@ -17,7 +18,7 @@ public class ShowRangeHood implements Action {
     public String qwe;
 
     @Override
-    public void run(Tile tile) {
+    public void run(Tile tile) throws HomeApiWrongResponseData {
         KeyBoard kb = new DeviceKeyBoard();
 
         List<RangeHood> rangeHoods = smartHome.getDevicesByType(RangeHood.class);

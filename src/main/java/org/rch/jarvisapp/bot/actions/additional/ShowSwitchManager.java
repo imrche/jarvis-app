@@ -8,6 +8,7 @@ import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.SwitchManageButton;
 import org.rch.jarvisapp.bot.ui.button.comparators.LightComparator;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
+import org.rch.jarvisapp.bot.ui.keyboard.SwitchManageKeyBoard;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
@@ -28,12 +29,18 @@ public class ShowSwitchManager implements Action {
         List<Light> lightList = smartHome.getDevicesByType(Light.class, place);
         lightList.sort(new LightComparator());
 
-        KeyBoard kbLight = new KeyBoard();
+/*        KeyBoard kbLight = new KeyBoard();
         for (Light device : lightList)
-            kbLight.addButton(device.getRow(), new SwitchManageButton(device));
+            //kbLight.addButton(device.getRow(), new Button(device.getName(),CommonCallBack.empty.name()));
+            kbLight.addButton(device.getRow(), new SwitchManageButton(device));*/
+
+        SwitchManageKeyBoard kb = new SwitchManageKeyBoard();
+        for (Light light : lightList)
+            kb.addDevice(light);
+
 
         tile.update()
                 .setCaption(description + " " + smartHome.getPlaceByCode(place).getName())
-                .setKeyboard(kbLight);
+                .setKeyboard(kb);
     }
 }
