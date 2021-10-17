@@ -73,4 +73,8 @@ public abstract class DataObject {
         return data;
     }
 
+    public boolean isEmpty(){
+        return data.isEmpty();
+    }
+
 }

@@ -2,8 +2,8 @@ package org.rch.jarvisapp.bot.ui.keyboard;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.DeviceButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -26,24 +26,20 @@ public class DeviceKeyBoard extends KeyBoard{
     }
 
     @Override
-    public void refresh(){
-        DeviceCommandData dcdPattern = new DeviceCommandData();
+    public void refresh() throws HomeApiWrongResponseData {
+        SwitcherData dcdPattern = new SwitcherData();
         for (Button button : getButtonsList()) {
             if (button instanceof DeviceButton)
-                dcdPattern.addDevices(((DeviceButton) button).getPatternCD());
+                dcdPattern.mergeDTO(((DeviceButton) button).getPatternCD());
         }
 
         if (!dcdPattern.isEmpty()) {
-            DeviceCommandData dcdResponse = AppContextHolder.getApi().getStatusDevice(dcdPattern);
+            SwitcherData dcdResponse = AppContextHolder.getApi().getStatusDevice(dcdPattern);
             //todo проверку на то что вернулись все запрошенные
             for (Button button : getButtonsList())
                 if (button instanceof DeviceButton) {
                     DeviceButton btn = (DeviceButton) button;
-                    try {
-                        btn.setState(dcdResponse.getDeviceBooleanValue(btn.getDevice().getId()));//todo обработать если статуса нет
-                    } catch (DeviceStatusIsUnreachable e) {
-
-                    }
+                    btn.setState(dcdResponse.getDeviceValue(btn.getDevice()));//todo обработать если статуса нет
                     btn.setCaption();
                 }
         }

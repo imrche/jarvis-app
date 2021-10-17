@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.rch.jarvisapp.bot.dataobject.*;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.utils.NetUtil;
@@ -34,6 +35,7 @@ public class Api {
     final String SET_VALVE = "/set/valve";
     final String SET_GATE = "/set/gate";
     final String SET_UPD_MESSAGE = "/set/updatingMessage";
+    final String SET_CURRENT_BOT_URL = "/set/currentBotUrl";
     final String PLACES_INIT = "/areas";//todo places
     final String DEVICES_INIT = "/devices";
 
@@ -57,16 +59,34 @@ public class Api {
         return new JSONArray(response);
     }
 
-    public DeviceCommandData getStatusLight(DeviceCommandData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_LIGHT, req.toString()).get(NetUtil.RESPONSE);
-        return new DeviceCommandData(response);
+    public SwitcherData getStatusLight(SwitcherData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_LIGHT, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SwitcherData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус ламп - ответ " + response, e);
+        }
     }
 
-    public DeviceCommandData getStatusDevice(DeviceCommandData req) {
-        String response = NetUtil.sendPOST(getURL() + STATUS_DEVICE, req.toString()).get(NetUtil.RESPONSE);
-        return new DeviceCommandData(response);
+    public void setStatusLight(SwitcherData req) {
+        NetUtil.sendPOST(getURL() + SET_LIGHT, req.getData());
     }
 
+
+
+
+    public SwitcherData getStatusDevice(SwitcherData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + STATUS_DEVICE, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SwitcherData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус устройств - ответ " + response, e);
+        }
+    }
+
+    public void setStatusDevice(SwitcherData req) {
+        NetUtil.sendPOST(getURL() + SET_DEVICE, req.getData());
+    }
 
 
 
@@ -83,15 +103,16 @@ public class Api {
         NetUtil.sendPOST(getURL() + SET_SW_MANAGER, req.getData());
     }
 
+
+
     public void setStatusLight(String req) {
         NetUtil.sendPOST(getURL() + SET_LIGHT, req);
     }
-    public void setStatusLight(DeviceCommandData req) {
-        NetUtil.sendPOST(getURL() + SET_LIGHT, req.toString());
-    }
-    public void setStatusDevice(DeviceCommandData req) {
-        NetUtil.sendPOST(getURL() + SET_DEVICE, req.toString());
-    }
+
+
+
+
+
     public void setStatusValve(SwitcherData req) {
         NetUtil.sendPOST(getURL() + SET_VALVE, req.getData());
     }
@@ -144,5 +165,12 @@ public class Api {
 
     public void setUpdatingMessage(String request){
         NetUtil.sendPOST(getURL() + SET_UPD_MESSAGE, request);
+    }
+
+
+    public void setBotUrl(String url){
+        JSONObject obj = new JSONObject();
+        obj.put("url", url);
+        NetUtil.sendPOST(getURL() + SET_CURRENT_BOT_URL, obj.toString());
     }
 }

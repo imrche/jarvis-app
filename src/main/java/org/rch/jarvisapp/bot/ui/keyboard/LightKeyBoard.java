@@ -3,9 +3,9 @@ package org.rch.jarvisapp.bot.ui.keyboard;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.lights.SetLight;
 import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
@@ -46,17 +46,17 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     }
 
     private List<Button> prepareGroupButton(){
-        DeviceCommandData cmd = new DeviceCommandData();
+        SwitcherData cmd = new SwitcherData();
 
         for (Button button : getButtonsList())
             if (button instanceof LightButton) {
                 Light light = ((LightButton) button).getLight();
-                cmd.addDevice(light.getId());
+                cmd.addSwitcher(light);
             }
 //todo если лампа одна, то не делать общ кнопки
         if (cmd.getDeviceCount() > 1) {
-            getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(1)).caching());
-            getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(0)).caching());
+            getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(true)).caching());
+            getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(false)).caching());
 
             defineVisibilityGroupButton();
         } else
@@ -93,24 +93,21 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     }
 
     @Override
-    public void refresh(){
-        DeviceCommandData dcdPattern = new DeviceCommandData();
+    public void refresh() throws HomeApiWrongResponseData {
+        SwitcherData dcdPattern = new SwitcherData();
         for (Button button : getButtonsList()) {
             if (button instanceof LightButton)
-                dcdPattern.addDevices(((LightButton) button).getPatternCD());
+                dcdPattern.mergeDTO(((LightButton) button).getPatternCD());
         }
 
-        if (!dcdPattern.isEmpty()) {
-            DeviceCommandData dcdResponse = AppContextHolder.getApi().getStatusLight(dcdPattern);
+        if (!dcdPattern.isEmpty()) {//todo  продублировать в аналогах
+            SwitcherData dcdResponse = AppContextHolder.getApi().getStatusLight(dcdPattern);
             //todo проверку на то что вернулись все запрошенные
             for (Button button : getButtonsList()) {
                 if (button instanceof LightButton) {
                     LightButton btn = (LightButton) button;
-                    try {
-                        btn.setStatus(dcdResponse.getDeviceBooleanValue(btn.getLight().getId()));//todo обработать если статуса нет
-                    } catch (DeviceStatusIsUnreachable e) {
-                        btn.setStatus(null);
-                    }
+                    btn.setStatus(dcdResponse.getDeviceValue(btn.getLight()));//todo обработать если статуса нет
+
                     btn.setCaption();
                 }
             }

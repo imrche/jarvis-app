@@ -6,8 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.devices.ReverseDevice;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
 
@@ -18,12 +18,12 @@ public class DeviceButton extends Button{
     Device device;
     Boolean state;
 
-    DeviceCommandData patternCD;
+    SwitcherData patternCD = new SwitcherData();
 
     public DeviceButton(Device device){
         super();
         this.device = device;
-        patternCD = new DeviceCommandData().addDevice(device.getId());
+        patternCD.addSwitcher(device);
     }
 
     public DeviceButton setCaption() {
@@ -40,19 +40,21 @@ public class DeviceButton extends Button{
         return value ? on : off;
     }
 
-    public void getCurrentState(){
+    public void getCurrentState() throws HomeApiWrongResponseData {
         Api api = AppContextHolder.getApi();
-        DeviceCommandData cd = api.getStatusDevice(patternCD);
-        try {
-            state = cd.getDeviceBooleanValue(device.getId());
-        } catch (DeviceStatusIsUnreachable e) {
-            state = null;//todo tmp
-        }
-    }
+        SwitcherData cd = api.getStatusDevice(patternCD);
+        state = cd.getDeviceValue(device);
 
+    }
+//todo навести порядок как в light
     public Button build(boolean withoutState){
-        if (!withoutState)
-            getCurrentState();
+        if (!withoutState) {
+            try {
+                getCurrentState();
+            } catch (HomeApiWrongResponseData homeApiWrongResponseData) {
+                homeApiWrongResponseData.printStackTrace();
+            }
+        }
         setCaption();
         setCallbackData(new ReverseDevice(patternCD).caching());
 

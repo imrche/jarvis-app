@@ -34,5 +34,6 @@ public class JarvisAppApplication {
 
 		(context.getBean(LiveProbe.class)).start();
 		AppContextHolder.getTilePool().clearFeedBack();
+		AppContextHolder.getApi().setBotUrl(bot.getBotPath());
 	}
 }

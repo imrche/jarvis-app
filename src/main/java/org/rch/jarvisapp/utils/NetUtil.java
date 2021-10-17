@@ -46,7 +46,6 @@ public class NetUtil {
 
     public static Map<String, String> sendPOST(String url, String body)  {
         logger.debug("SEND POST " + url + " - " + body);
-        //System.out.println("SEND POST " + url + " - " + body);
         Util.logStackTrace(10);
 
         Map<String, String> result = new HashMap<>();

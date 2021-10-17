@@ -4,6 +4,7 @@ import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.JarvisBot;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.DataContained;
+import org.rch.jarvisapp.bot.dataobject.DataObject;
 import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
@@ -28,7 +29,7 @@ public class MoveDoor implements Action, DataContained {
     }
 
     @Override
-    public Action setData(Object data) {
+    public Action setData(DataObject data) {
         this.data = (GateData)data;
         return this;
     }

@@ -55,10 +55,10 @@ public class SwitcherData extends DataObject{
         element.value = value;
     }
 
-    public void setAllDevicesValue(Boolean newValue){
-        for (DTOElement e : data){
+    public SwitcherData setAllDevicesValue(Boolean newValue){
+        for (DTOElement e : data)
             ((SwitcherElement) e).value = newValue;
-        }
+        return this;
     }
 
     @Nullable

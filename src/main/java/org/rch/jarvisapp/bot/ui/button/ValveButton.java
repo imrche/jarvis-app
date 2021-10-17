@@ -1,10 +1,8 @@
 package org.rch.jarvisapp.bot.ui.button;
 
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.devices.Valve;
 

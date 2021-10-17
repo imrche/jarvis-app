@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.actions.lights.ReverseLight;
-import org.rch.jarvisapp.bot.exceptions.DeviceStatusIsUnreachable;
-import org.rch.jarvisapp.smarthome.api.Api;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
 @Data
@@ -18,11 +17,11 @@ public class LightButton extends Button{
     Light light;
     Boolean status;
 
-    final DeviceCommandData patternCD = new DeviceCommandData();
+    final SwitcherData patternCD = new SwitcherData();
 
     public LightButton(Light light){
         this.light = light;
-        patternCD.addDevice(light.getId());
+        patternCD.addSwitcher(light);
         setCallbackData(new ReverseLight(patternCD).caching());
     }
 
@@ -40,13 +39,10 @@ public class LightButton extends Button{
     }
 
     @Override
-    public void refresh() {
-        DeviceCommandData cd = AppContextHolder.getApi().getStatusLight(patternCD);
-        try {
-            status = cd.getDeviceBooleanValue(light.getId());
-        } catch (DeviceStatusIsUnreachable e) {
-            status = null;
-        }
+    public void refresh() throws HomeApiWrongResponseData {
+        SwitcherData sd = AppContextHolder.getApi().getStatusLight(patternCD);
+        status = sd.getDeviceValue(light);
+
         setCaption();
     }
 }
