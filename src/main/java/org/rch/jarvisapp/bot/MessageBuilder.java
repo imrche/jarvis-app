@@ -49,7 +49,7 @@ public class MessageBuilder {
         }
     }
 
-    public Integer sendAsync(String text, KeyBoard keyBoard){
+    public Integer sendAsync(String text, InlineKeyboardMarkup keyBoard){
         try {
             Message message = bot.execute(new SendMessage(bot.getChat(), text)
                     .setReplyMarkup(keyBoard));

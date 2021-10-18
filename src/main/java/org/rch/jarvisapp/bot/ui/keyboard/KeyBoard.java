@@ -1,16 +1,11 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreType;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,14 +14,14 @@ import java.util.stream.Collectors;
 
 @Data
 @FieldDefaults(level= AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = true)
-public class KeyBoard extends InlineKeyboardMarkup {
+@EqualsAndHashCode
+public class KeyBoard{
     List<List<Button>> buttons = new ArrayList<>();
 
-    @Override
-    public List<List<InlineKeyboardButton>> getKeyboard() {
-        setKB();
-        return super.getKeyboard();
+    public KeyBoard(){}
+
+    public List<List<Button>> getInlineButtons(){
+        return buttons;
     }
 
     public KeyBoard addButton(int rowNum, Button button){
@@ -50,24 +45,6 @@ public class KeyBoard extends InlineKeyboardMarkup {
         return this;
     }
 
-    private void setKB(){
-        List<List<InlineKeyboardButton>> result = new ArrayList<>();
-        for (List<Button> list : buttons) {
-            List<InlineKeyboardButton> row = new ArrayList<>(list);
-            result.add(row);
-        }
-        setKeyboard(result);
-    }
-
-    public void merge(List<List<InlineKeyboardButton>>  mergingKB){
-        for (List<InlineKeyboardButton> list : mergingKB) {
-            List<Button> newList = new ArrayList<>();
-            for (InlineKeyboardButton button : list)
-                newList.add((Button)button);
-            buttons.add(newList);
-        }
-    }
-
     public void merge(KeyBoard mergingKB){
         buttons.addAll(mergingKB.getButtons());
     }
@@ -78,28 +55,8 @@ public class KeyBoard extends InlineKeyboardMarkup {
                 .collect(Collectors.toList());
     }
 
-    public KeyBoard(){
-    }
-
     public void refresh() throws HomeApiWrongResponseData {
         for (Button button : getButtonsList())
             button.refresh();
     }
-
-/*    public KeyBoard(BotCommand botCommand){
-        for (Menu menuItem : Menu.values()){
-            if (menuItem.isPartOf(botCommand)){
-                if (menuItem.getActionType() != null) {
-                    ActionData actionData;
-                    if (menuItem.isPlaceGrouping())
-                        actionData = new ActionData(menuItem.getActionType(),"");
-                    else
-                        actionData = new ActionData(menuItem.getActionType());
-                    addButton(menuItem.getRow(), new Button(menuItem.getDescription(), actionData));
-                }
-                if (menuItem.getProduceCommand() != null)
-                    addButton(menuItem.getRow(), new Button(menuItem.getDescription(), menuItem.getProduceCommand().name()));
-            }
-        }
-    }*/
 }

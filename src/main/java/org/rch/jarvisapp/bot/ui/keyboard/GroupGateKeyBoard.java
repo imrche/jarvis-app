@@ -1,12 +1,11 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.SneakyThrows;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
+import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Gate;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class GroupGateKeyBoard extends KeyBoard implements DeviceContainer {
         return list;
     }
 
-    public void addGate(Gate gate) throws HomeApiWrongResponseData {
+    public void addGate(Gate gate){
         listGateKB.add(new GateKeyBoard(gate));
     }
 
@@ -40,13 +39,12 @@ public class GroupGateKeyBoard extends KeyBoard implements DeviceContainer {
 
     @SneakyThrows
     @Override
-    public List<List<InlineKeyboardButton>> getKeyboard() {
+    public List<List<Button>> getInlineButtons(){
         refresh();//todo возможно это плохое место
-        List<List<InlineKeyboardButton>> kb = super.getKeyboard();
+        List<List<Button>> kb = new ArrayList<>(super.getButtons());
         for (GateKeyBoard gateKB : listGateKB)
-            kb.addAll(gateKB.getKeyboard());
+            kb.addAll(gateKB.getInlineButtons());
 
-        setKeyboard(kb);
         return kb;
     }
 }

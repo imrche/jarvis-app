@@ -22,7 +22,7 @@ public class LightButton extends Button{
     public LightButton(Light light){
         this.light = light;
         patternCD.addSwitcher(light);
-        setCallbackData(new ReverseLight(patternCD).caching());
+        setCallBack(new ReverseLight(patternCD));
     }
 
     public void setCaption() {

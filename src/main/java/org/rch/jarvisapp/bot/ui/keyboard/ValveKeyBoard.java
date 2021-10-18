@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ValveKeyBoard extends KeyBoard implements DeviceContainer {
     private ValveButton valveButton;
-    private Integer status;
+    //private Integer status;
 
     public ValveKeyBoard(Valve valve){
         valveButton = new ValveButton(valve);
@@ -24,8 +24,7 @@ public class ValveKeyBoard extends KeyBoard implements DeviceContainer {
         addButton(2, new Button("Закрыть", new CloseValve(valve)));
     }
 
-    public ValveKeyBoard() {
-    }
+    public ValveKeyBoard() {}
 
 
     @Override

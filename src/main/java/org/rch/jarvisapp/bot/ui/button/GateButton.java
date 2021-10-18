@@ -12,11 +12,10 @@ public class GateButton extends Button{
     private final GateData requestStatusData = new GateData();
     private GateStatus status;
 
-    public GateButton(Gate gate) throws HomeApiWrongResponseData {
+    public GateButton(Gate gate){
         super("", CommonCallBack.empty.name());
         this.gate = gate;
         requestStatusData.addGate(gate);
-        //refresh();
     }
 
     public void setCaption(){

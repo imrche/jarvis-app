@@ -22,7 +22,7 @@ public class SwitchManageButton extends Button{
     public SwitchManageButton(Light light){
         this.light = light;
         patternCD.addSwitcher(light);
-        setCallbackData(new ReverseSWManage(patternCD).caching());
+        setCallBack(new ReverseSWManage(patternCD));
     }
 
     public void setCaption() {
@@ -41,15 +41,11 @@ public class SwitchManageButton extends Button{
     public void setStatus(Boolean status){
         this.status = status;
         setCaption();
-
     }
 
     @Override
     public void refresh() throws HomeApiWrongResponseData {
         SwitcherData cd = AppContextHolder.getApi().getStatusSwitchManager(patternCD);
         setStatus(cd.getDeviceValue(light));
-        //status = cd.getDeviceValue(light);
-
-        //setCaption();
     }
 }

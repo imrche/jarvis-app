@@ -27,7 +27,7 @@ public class DeviceButton extends Button{
     }
 
     public DeviceButton setCaption() {
-        super.setText(device.getPlacement().getName() + " " + visualize(state));
+        super.setCaption(device.getPlacement().getName() + " " + visualize(state));
         return this;
     }
 
@@ -56,7 +56,7 @@ public class DeviceButton extends Button{
             }
         }
         setCaption();
-        setCallbackData(new ReverseDevice(patternCD).caching());
+        setCallBack(new ReverseDevice(patternCD));
 
         return this;
     }

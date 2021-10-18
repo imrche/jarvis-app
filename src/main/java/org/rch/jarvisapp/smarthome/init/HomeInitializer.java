@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.rch.jarvisapp.bot.ui.button.comparators.PlaceComparator;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
@@ -47,12 +48,9 @@ public class HomeInitializer {
         return mapper.readValue(jsonObject.toString(),convert2class(jsonObject.get(TYPE).toString()));
     }
 
-
-//todo подумать, может стоит перенести в рантайм
     public HomeInitializer(Api api, SmartHome smartHome) {
         this.api = api;
         this.smartHome = smartHome;
-
     }
 
     public void init() throws Exception {
@@ -76,6 +74,8 @@ public class HomeInitializer {
                     logger.error("Зона/помещение " + e.getMessage(),e);
                 }
         }
+
+        smartHome.getPlaces().sort(new PlaceComparator());
 
         if (!devices.isEmpty()){
             for (Object obj : devices)

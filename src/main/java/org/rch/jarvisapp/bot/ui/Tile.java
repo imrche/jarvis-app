@@ -8,6 +8,8 @@ import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.*;
 
@@ -16,7 +18,7 @@ public class Tile{
     Integer messageId;
     String caption;
     List<KeyBoard> content = new ArrayList<>();
-    KeyBoard stepBackButton = new KeyBoard();
+    Button stepBack = new Button("Назад", CommonCallBack.stepBackTile.name());
 
     ParseMode parseMode;
 
@@ -26,9 +28,7 @@ public class Tile{
         content.add(keyBoard);
     }
 
-    public Tile() {
-        stepBackButton.addButton(1, new Button("Назад", CommonCallBack.stepBackTile.name()));
-    }
+    public Tile() {}
 
     public Tile refresh() throws HomeApiWrongResponseData {
         //todo сделать приватной, чтобы избежать вызовов ненужных
@@ -38,15 +38,28 @@ public class Tile{
         return this;
     }
 
-    private KeyBoard getUnionKeyBoard() throws HomeApiWrongResponseData {
-        KeyBoard kb = new KeyBoard();
+    private InlineKeyboardMarkup getUnionKeyBoard() throws HomeApiWrongResponseData {
+        InlineKeyboardMarkup kb = new InlineKeyboardMarkup();
+
+        List<List<InlineKeyboardButton>> mList = new ArrayList<>();
+
         for (KeyBoard keyBoard : content) {
-            keyBoard.refresh();//todo Убрать. Пока для обновления Активаторов. Иначе падают
-            kb.merge(keyBoard.getKeyboard());
+            keyBoard.refresh();
+
+            for (List<Button> lBtn : keyBoard.getInlineButtons()){
+                List<InlineKeyboardButton> list = new ArrayList<>();
+                for (Button btn : lBtn)
+                    list.add(btn.getInlineButton());
+
+                if (list.size() > 0)
+                    mList.add(list);
+            }
         }
 
         if (historyStack.size()>0)
-            kb.merge(stepBackButton);
+            mList.add(new ArrayList<>(Collections.singletonList(stepBack.getInlineButton())));
+
+        kb.setKeyboard(mList);
 
         return kb;
     }

@@ -11,8 +11,6 @@ public class ChangeStateValve implements Action {
     Valve valve;
     Boolean direction; //true - open, false - close
 
-    public String qwe;
-
     public ChangeStateValve(Valve valve, Boolean direction) {
         this.valve = valve;
         this.direction = direction;

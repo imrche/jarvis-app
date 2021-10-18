@@ -7,26 +7,28 @@ import org.rch.jarvisapp.bot.ui.button.comparators.LightComparator;
 import org.rch.jarvisapp.bot.ui.keyboard.SwitchManageKeyBoard;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.devices.Light;
+import org.rch.jarvisapp.smarthome.devices.TimerSupport;
 
 import java.util.List;
 
-public class ShowSwitchManager implements Action {
+public class ShowTimers implements Action {
     public final static String description = "Активатор";
     SmartHome smartHome = AppContextHolder.getSH();
     String place;
 
-    public ShowSwitchManager(String place) {
+    public ShowTimers(String place) {
         this.place = place;
     }
 
     @Override
     public void run(Tile tile) {
-        List<Light> lightList = smartHome.getDevicesByType(Light.class, place);
-        lightList.sort(new LightComparator());
+     //   List<TimerSupport> lightList = smartHome.getDevicesByType(TimerSupport.class, place);
+        //lightList.sort(new LightComparator());
 
         SwitchManageKeyBoard kb = new SwitchManageKeyBoard();
-        for (Light light : lightList)
-            kb.addDevice(light);
+/*        for (TimerSupport light : lightList)
+            kb.addDevice(light);*/
+
 
         tile.update()
                 .setCaption(description + " " + smartHome.getPlaceByCode(place).getName())

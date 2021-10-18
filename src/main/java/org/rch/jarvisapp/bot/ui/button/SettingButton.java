@@ -22,7 +22,7 @@ public class SettingButton extends Button{
     }
 
     public void setCaption(){
-        setText(settingsList.getDescription() + "   ->   " + AppContextHolder.getSettings().getSetting(settingsList).toString());
+        setCaption(settingsList.getDescription() + "   ->   " + AppContextHolder.getSettings().getSetting(settingsList).toString());
     }
 
     @Override

@@ -8,7 +8,6 @@ import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.GateButton;
 import org.rch.jarvisapp.smarthome.devices.Gate;
 import org.rch.jarvisapp.smarthome.devices.status.GateStatus;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +25,7 @@ public class GateKeyBoard extends KeyBoard {
 
     private final Gate gate;
 
-    public GateKeyBoard(Gate gate) throws HomeApiWrongResponseData {
+    public GateKeyBoard(Gate gate){
         super();
         fullControlButtonRow.add(new Button(ON, new OpenGate(gate)));
         fullControlButtonRow.add(new Button(OFF, new CloseGate(gate)));
@@ -53,12 +52,10 @@ public class GateKeyBoard extends KeyBoard {
     }
 
     @Override
-    public List<List<InlineKeyboardButton>> getKeyboard() {
-        List<List<InlineKeyboardButton>> kb = super.getKeyboard();
-
+    public List<List<Button>> getInlineButtons(){
+        List<List<Button>> kb = new ArrayList<>(super.getButtons());
         kb.add(new ArrayList<>(currentCommandData));
 
-        setKeyboard(kb);
         return kb;
     }
 }

@@ -12,7 +12,6 @@ import org.rch.jarvisapp.smarthome.api.Api;
 public class ReverseSWManage implements Action, DataContained {
     Api api = AppContextHolder.getApi();
     SwitcherData data;
-    public String dummy;
 
     public ReverseSWManage() {}
 
@@ -24,9 +23,7 @@ public class ReverseSWManage implements Action, DataContained {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         api.setStatusSwitchManager(api.getStatusSwitchManager(data).reverse());
         //todo перенести реверс на сервер (возвращать статус, который получился по итогу)
-        //tile.refresh();
     }
-
 
     @Override
     public Action setData(DataObject data) {

@@ -15,7 +15,6 @@ import java.util.List;
 public class ShowRangeHood implements Action {
     public final static String description = "Вытяжки";
     SmartHome smartHome = AppContextHolder.getSH();
-    public String qwe;
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {

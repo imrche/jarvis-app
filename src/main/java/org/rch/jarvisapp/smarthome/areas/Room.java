@@ -11,7 +11,9 @@ public class Room extends Place {
         super(
                 fields.getAsString(CODE),
                 fields.getAsString(NAME),
-                fields.getAsString(PARENT)
+                fields.getAsString(PARENT),
+                fields.getAsInteger(ROW),
+                fields.getAsInteger(PRIORITY)
         );
     }
 }

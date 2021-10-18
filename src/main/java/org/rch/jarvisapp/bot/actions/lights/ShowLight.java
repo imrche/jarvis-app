@@ -47,7 +47,7 @@ public class ShowLight implements Action, RunnableByPlace {
 
             KeyBoard kb = new LightKeyBoard(place);
             for (Place place : places)
-                kb.addButton(1, new Button(place.getName(), new ShowLight(place.getCode())));
+                kb.addButton(place.getRow(), new Button(place.getName(), new ShowLight(place.getCode())));
 
             KeyBoard kbLight = new LightKeyBoard();
             List<Light> lightList = smartHome.getDevicesByType(Light.class, place);

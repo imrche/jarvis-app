@@ -14,16 +14,13 @@ import java.util.List;
 public class ShowValve implements Action {
     public final static String description = "Вводные краны";
     SmartHome smartHome = AppContextHolder.getSH();
-    public String qwe;
 
     @Override
     public void run(Tile tile) {
-        KeyBoard kb = new ValveKeyBoard();
         List<KeyBoard> kbList = new ArrayList<>();
 
         for (Valve valve : smartHome.getDevicesByType(Valve.class))
             kbList.add(new ValveKeyBoard(valve));
-            //kb.merge(new ValveKeyBoard(valve));
 
         tile.update()
                 .setCaption(description)

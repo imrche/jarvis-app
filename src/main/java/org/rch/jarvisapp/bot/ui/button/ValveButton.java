@@ -15,7 +15,6 @@ public class ValveButton extends Button{
         super("", CommonCallBack.empty.name());
         this.valve = valve;
         requestStatusData.addSwitcher(valve);
-        //refresh();
     }
 
     public void setCaption(){

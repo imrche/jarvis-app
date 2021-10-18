@@ -11,7 +11,6 @@ import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Light;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
 
     private Button getGroupButton(String state){
         for (Button button : groupButtonRow)
-            if (state.equals(button.getText()))
+            if (state.equals(button.getCaption()))
                 return button;
 
         return new Button(state, CommonCallBack.empty.name()); //todo warnings
@@ -55,8 +54,8 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
             }
 //todo если лампа одна, то не делать общ кнопки
         if (cmd.getDeviceCount() > 1) {
-            getGroupButton(ON).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(true)).caching());
-            getGroupButton(OFF).setCallbackData(new SetLight().setData(cmd.setAllDevicesValue(false)).caching());
+            getGroupButton(ON).setCallBack(new SetLight().setData(cmd.setAllDevicesValue(true)));//todo починить клонированием
+            getGroupButton(OFF).setCallBack(new SetLight().setData(cmd.setAllDevicesValue(false)));
 
             defineVisibilityGroupButton();
         } else
@@ -116,8 +115,8 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     }
 
     @Override
-    public List<List<InlineKeyboardButton>> getKeyboard() {
-        List<List<InlineKeyboardButton>> kb = super.getKeyboard();
+    public List<List<Button>> getInlineButtons(){
+        List<List<Button>> kb = new ArrayList<>(super.getButtons());
 
         for (Button button : getButtonsList()) {
             if (button instanceof LightButton) {
@@ -127,7 +126,6 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
             }
         }
 
-        setKeyboard(kb);
         return kb;
     }
 

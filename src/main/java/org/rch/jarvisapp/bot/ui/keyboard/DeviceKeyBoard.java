@@ -6,13 +6,12 @@ import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.DeviceButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceKeyBoard extends KeyBoard{
-    private List<Button> TimersButtonRow = new ArrayList<>();
+    private final List<Button> TimersButtonRow = new ArrayList<>();
 
     public static final String TIMERS = "Таймеры";
 
@@ -47,17 +46,15 @@ public class DeviceKeyBoard extends KeyBoard{
     }
 
     @Override
-    public List<List<InlineKeyboardButton>> getKeyboard() {
-        List<List<InlineKeyboardButton>> kb = super.getKeyboard();
+    public List<List<Button>> getInlineButtons(){
+        List<List<Button>> kb = new ArrayList<>(super.getButtons());
 
-        for (Button button : getButtonsList()) {
+        for (Button button : getButtonsList())
             if (button instanceof DeviceButton) {
                 kb.add(new ArrayList<>(TimersButtonRow));
                 break;
             }
-        }
 
-        setKeyboard(kb);
         return kb;
     }
 }

@@ -1,5 +1,6 @@
 package org.rch.jarvisapp.bot.ui.button;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,29 +11,40 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = true)
-public class Button extends InlineKeyboardButton {
+@EqualsAndHashCode
+public class Button{
+    InlineKeyboardButton inlineButton = new InlineKeyboardButton();
     boolean visible = true;
     Action action;
 
     public Button(String name, String data){
         setCaption(name);
-        setCallbackData(data);
+        setCallBack(data);
     }
 
     public Button(String name, Action data){
-        setText(name);
+        inlineButton.setText(name);
         action = data;
-        setCallbackData(data.caching());
+        setCallBack(data);
     }
 
-    public Button() {
-    }
+    public Button() {}
 
-    public void refresh() throws HomeApiWrongResponseData {
-    }
+    public void refresh() throws HomeApiWrongResponseData {}
 
     public void setCaption(String name){
-        setText(name);
+        inlineButton.setText(name);
+    }
+
+    public String getCaption(){
+        return inlineButton.getText();
+    }
+
+    public void setCallBack(Action data){
+        inlineButton.setCallbackData(data.caching());
+    }
+
+    public void setCallBack(String data){
+        inlineButton.setCallbackData(data);
     }
 }
