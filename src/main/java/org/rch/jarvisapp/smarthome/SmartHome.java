@@ -8,7 +8,6 @@ import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Sensor;
-import org.rch.jarvisapp.smarthome.devices.TimerSupport;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 import org.springframework.stereotype.Component;
 
