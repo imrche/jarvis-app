@@ -7,7 +7,7 @@ import org.rch.jarvisapp.bot.ui.button.comparators.LightComparator;
 import org.rch.jarvisapp.bot.ui.keyboard.SwitchManageKeyBoard;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.devices.Light;
-import org.rch.jarvisapp.smarthome.devices.TimerSupport;
+
 
 import java.util.List;
 
