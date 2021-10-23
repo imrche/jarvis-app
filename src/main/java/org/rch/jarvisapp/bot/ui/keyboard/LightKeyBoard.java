@@ -74,10 +74,12 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
         int countOn = 0;
 
         for (Button button : getButtonsList()) {
-            countButton++;
+            if (button instanceof LightButton) {
+                countButton++;
 
-            if (((LightButton) button).getStatus())
-                countOn++;
+                if (((LightButton) button).getStatus())
+                    countOn++;
+            }
         }
 
         if (countOn == 0)
@@ -87,8 +89,10 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     }
 
     private void hideGroupButton(){
-        getGroupButton(ON).setVisible(false);
-        getGroupButton(OFF).setVisible(false);
+        for (Button btn : groupButtonRow)
+            btn.setVisible(false);//todo если тут оказались, то значит группа в этой клавиатуре никогда не будет нужна
+        //getGroupButton(ON).setVisible(false);
+        //getGroupButton(OFF).setVisible(false);
     }
 
     @Override
