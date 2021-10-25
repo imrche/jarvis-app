@@ -8,10 +8,12 @@ import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Sensor;
+import org.rch.jarvisapp.smarthome.devices.filters.Predicates;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -93,5 +95,22 @@ public class SmartHome {
 
         return result;
     }
+
+    public <T extends Device> Boolean hasDevicesOfType(Class<T> type, Place place){
+        for (Device device : devices) {
+            if (type.isInstance(device) && device.getPlacement().equals(place))
+                return true;
+        }
+        return false;
+    }
+
+    public <T extends Device> List<Device> getDevicesWithFilter(List<Predicate<Device>> list){
+
+        return devices
+                .stream()
+                .filter(Predicates.accumulator(list))
+                .collect(Collectors.toList());
+    }
+
 }
 
