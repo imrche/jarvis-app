@@ -44,4 +44,36 @@ public class SomeTests {
         list.stream().limit(3).forEach(System.out::println);
     }
 
+    @Test
+    void Qwe(){
+        Integer n = null;
+        try {
+            Integer i = 1 - n;
+            System.out.println("yes");
+        }catch (NullPointerException e){
+            System.out.println("no");
+        }
+    }
+
+    @Test
+    void cloneTest() throws CloneNotSupportedException {
+        class Tst1{
+            Integer s = 321;
+        }
+        class Tst2 implements Cloneable{
+            Tst1 tst1 = new Tst1();
+
+            @Override
+            protected Object clone() throws CloneNotSupportedException {
+                return (Tst2)super.clone();
+            }
+        }
+
+        Tst2 t1 = new Tst2();
+        Tst2 t2 = (Tst2)t1.clone();
+
+        System.out.println(t1.tst1.s.equals(t2.tst1.s));
+        System.out.println("stop");
+    }
+
 }

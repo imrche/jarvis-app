@@ -6,9 +6,7 @@ import org.rch.jarvisapp.bot.dataobject.DeviceCommandData;
 import org.rch.jarvisapp.bot.dataobject.GateData;
 import org.rch.jarvisapp.bot.dataobject.LightCommandData;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
-import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Gate;
-import org.rch.jarvisapp.smarthome.devices.TestDevice;
 
 //@SpringBootTest
 public class CommandDataTests {
@@ -46,11 +44,11 @@ public class CommandDataTests {
     void NewDataSet(){
         SwitcherData d = new SwitcherData();
 
-        Device device = new TestDevice(1);
-        d.addSwitcher(device);
+        //Device device = new TestDevice(1);
+        //d.addSwitcher(device);
 
 
-        d.addSwitcher(device);
+       // d.addSwitcher(device);
 
 
         System.out.println(d.getData());

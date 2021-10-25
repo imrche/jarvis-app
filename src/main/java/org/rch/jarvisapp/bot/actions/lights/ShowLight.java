@@ -3,7 +3,6 @@ package org.rch.jarvisapp.bot.actions.lights;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.RunnableByPlace;
-
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
@@ -22,51 +21,51 @@ import java.util.List;
 public class ShowLight implements Action, RunnableByPlace {
     public final static String description = "Освещение";
 
-    private String place;
+    private Place place;
     SmartHome smartHome = AppContextHolder.getSH();
 
     public ShowLight() {}
 
-    public ShowLight(String place) {
+    public ShowLight(Place place) {
         this.place = place;
     }
 
     @Override
-    public void setPlace(String place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 
-    public String getPlace() {
+    public Place getPlace() {
         return  place;
     }
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
-        if (place != null){
-            List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
+        List<Place> places = place == null ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 
-            KeyBoard kb = new LightKeyBoard(place);
-            for (Place place : places)
-                kb.addButton(place.getRow(), new Button(place.getName(), new ShowLight(place.getCode())));
-
-            KeyBoard kbLight = new LightKeyBoard();
-            List<Light> lightList = smartHome.getDevicesByType(Light.class, place);
-            lightList.sort(new LightComparator());
-            for (Light device : lightList)
-                kbLight.addButton(device.getRow(), new LightButton(device));
-
-            if (kbLight.getButtonsList().size() > 0) {
-                kbLight.refresh();
-                kb.merge(kbLight);
-            }
-
-            tile.update()
-                    .setCaption(description + (!place.isEmpty() ? " - " + smartHome.getPlaceByCode(place).getName() : ""))
-                    .setKeyboard(kb);
+        KeyBoard kb = new LightKeyBoard(place);
+        for (Place place : places) {//todo make a filter for hiding places without device of this class
+            kb.addButton(place.getRow(), new Button(place.getFormattedName(), new ShowLight(place)));
         }
+
+        KeyBoard kbLight = new LightKeyBoard();
+
+        List<Light> lightList = smartHome.getDevicesByType(Light.class, place);
+        lightList.sort(new LightComparator());
+        for (Light device : lightList)
+            kbLight.addButton(device.getRow(), new LightButton(device));
+
+        if (kbLight.getButtonsList().size() > 0) {
+            kbLight.refresh();
+            kb.merge(kbLight);
+        }
+
+        tile.update()
+                .setCaption(description + (place != null ? " - " + place.getName() : ""))
+                .setKeyboard(kb);
     }
     @Override
     public int hashCode() {
-        return place.hashCode() + this.getClass().hashCode();
+        return (place == null ? "emptyPlace".hashCode() : place.hashCode()) + this.getClass().hashCode();
     }
 }

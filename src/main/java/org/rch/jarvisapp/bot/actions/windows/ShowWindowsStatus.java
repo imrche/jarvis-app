@@ -20,53 +20,61 @@ import java.util.List;
 public class ShowWindowsStatus implements Action, RunnableByPlace {
     public final static String description = "Статусы окон по помещению";
 
-    private String place;
+    private Place place;
     SmartHome smartHome = AppContextHolder.getSH();
 
     public ShowWindowsStatus() {}
 
-    public ShowWindowsStatus(String place) {
+    public ShowWindowsStatus(Place place) {
         this.place = place;
     }
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
-        if (place != null){
-            List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
+        List<Place> places = place == null ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 
-            KeyBoard kb = new KeyBoard();
-            for (Place place : places)
-                kb.addButton(1, new Button(place.getName(),new ShowWindowsStatus(place.getCode())));
+        KeyBoard kb = new KeyBoard();
+        for (Place place : places)
+            kb.addButton(place.getRow(), new Button(place.getFormattedName(),new ShowWindowsStatus(place)));
 
-            if (kb.getButtons().size() == 0){
-                List<Window> list = smartHome.getDevicesByType(Window.class, place);
+        if (kb.getButtons().size() == 0){
+            String captionValue;
+            List<Window> list = smartHome.getDevicesByType(Window.class, place);
+            if (!list.isEmpty()) {
                 WindowData responseSD = SensorUtils.getWindowValues(list);
 
-                StringBuilder result = new StringBuilder(MD.italic(smartHome.getPlaceByCode(place).getName()) + "\n");
+                StringBuilder result = new StringBuilder(MD.italic(place.getName()) + "\n");
 
                 for (Window window : list){
                     result.append(MD.fixWidth(window.getName(), 20))
                             .append(MD.bold(responseSD.getWindowValue(window)))
                             .append("\n");
                 }
-
-                tile.update()
-                        .setCaption(result.toString())
-                        .setParseMode(ParseMode.Markdown)
-                        .clearKeyboard();
+                captionValue = result.toString();
             } else
-                tile.update()
-                        .setCaption(description + (!place.isEmpty() ? " - " + smartHome.getPlaceByCode(place).getName() : ""))
-                        .setKeyboard(kb);
-        }
+                captionValue = "В помещении нет окон с датчиками";
+
+            tile.update()
+                    .setCaption(captionValue)
+                    .setParseMode(ParseMode.Markdown)
+                    .clearKeyboard();
+        } else
+            tile.update()
+                    .setCaption(description + (place != null ? " - " + place.getName() : ""))
+                    .setKeyboard(kb);
     }
 
     @Override
-    public void setPlace(String place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 
-    public String getPlace() {
-        return  place;
+    public Place getPlace() {
+        return place;
+    }
+
+    @Override
+    public int hashCode() {
+        return (place == null ? "emptyPlace".hashCode() : place.hashCode()) + this.getClass().hashCode();
     }
 }

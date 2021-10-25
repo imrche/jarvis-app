@@ -12,6 +12,7 @@ import org.rch.jarvisapp.bot.ui.button.comparators.LightComparator;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.LightKeyBoard;
 import org.rch.jarvisapp.smarthome.SmartHome;
+import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
 import java.util.List;
@@ -19,11 +20,10 @@ import java.util.List;
 @Getter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TimerProperties implements Action, RunnableByPlace {
-    String place;
+    Place place;
     final SmartHome smartHome = AppContextHolder.getSH();
 
-
-    public TimerProperties(String place) {
+    public TimerProperties(Place place) {
         this.place = place;
     }
 
@@ -41,7 +41,7 @@ public class TimerProperties implements Action, RunnableByPlace {
     }
 
     @Override
-    public void setPlace(String place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 

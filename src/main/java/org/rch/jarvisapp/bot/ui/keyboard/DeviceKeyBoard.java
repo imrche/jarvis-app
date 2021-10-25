@@ -6,6 +6,7 @@ import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.DeviceButton;
+import org.rch.jarvisapp.smarthome.areas.Place;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +17,10 @@ public class DeviceKeyBoard extends KeyBoard{
     public static final String TIMERS = "Таймеры";
 
     public DeviceKeyBoard() {
-        this("");//todo
+        this(null);//todo
     }
 
-    public DeviceKeyBoard(String place){
+    public DeviceKeyBoard(Place place){
         super();
         TimersButtonRow.add(new Button(TIMERS, new ShowAdditionalPropertiesAction(place)));
     }

@@ -19,55 +19,64 @@ import java.util.List;
 public class ShowSensorsStatus implements Action, RunnableByPlace {
     public final static String description = "Статусы по помещению";
 
-    private String place;
+    private Place place;
     SmartHome smartHome = AppContextHolder.getSH();
 
     public ShowSensorsStatus() {}
 
-    public ShowSensorsStatus(String place) {
+    public ShowSensorsStatus(Place place) {
         this.place = place;
     }
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
-        if (place != null){
-            List<Place> places = place.isEmpty() ? smartHome.getArea() : smartHome.getPlaceChildren(place);
+        List<Place> places = place == null ? smartHome.getArea() : smartHome.getPlaceChildren(place);
 
-            KeyBoard kb = new KeyBoard();
-            for (Place place : places)
-                kb.addButton(1, new Button(place.getName(),new ShowSensorsStatus(place.getCode())));
+        KeyBoard kb = new KeyBoard();
+        for (Place place : places)
+            kb.addButton(place.getRow(), new Button(place.getFormattedName(),new ShowSensorsStatus(place)));
 
-            //пока полагаем что датчики есть только в конечных помещениях
-            if (kb.getButtons().size() == 0){
-                List<Sensor> list = smartHome.getDevicesByType(Sensor.class, place);
+        //пока полагаем что датчики есть только в конечных помещениях
+        if (kb.getButtons().size() == 0){
+            List<Sensor> list = smartHome.getDevicesByType(Sensor.class, place);
+            String captionValue;
+            if (!list.isEmpty()) {
                 SensorData responseSD = SensorUtils.getSensorValues(list);
 
-                StringBuilder result = new StringBuilder(MD.italic(smartHome.getPlaceByCode(place).getName()) + "\n");
+                StringBuilder result = new StringBuilder(MD.italic(place.getName()) + "\n");
 
-                for (Sensor sensor : list){
+                for (Sensor sensor : list) {
                     result.append(MD.fixWidth(sensor.getSensorType().getDescription(), 20))
                             .append(MD.bold(responseSD.getSensorValue(sensor)))
                             .append(sensor.getSensorType().getUnit())
                             .append("\n");
                 }
-
-                tile.update()
-                        .setCaption(result.toString())
-                        .setParseMode(ParseMode.Markdown)
-                        .clearKeyboard();
+                captionValue = result.toString();
             } else
-                tile.update()
-                        .setCaption(description + (!place.isEmpty() ? " - " + smartHome.getPlaceByCode(place).getName() : ""))
-                        .setKeyboard(kb);
-        }
+                captionValue = "В помещении датчиков нет";
+
+
+            tile.update()
+                    .setCaption(captionValue)
+                    .setParseMode(ParseMode.Markdown)
+                    .clearKeyboard();
+        } else
+            tile.update()
+                    .setCaption(description + ( place!=null ? " - " + place.getName() : ""))
+                    .setKeyboard(kb);
     }
 
     @Override
-    public void setPlace(String place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 
-    public String getPlace() {
+    public Place getPlace() {
         return  place;
+    }
+
+    @Override
+    public int hashCode() {
+        return (place == null ? "emptyPlace".hashCode() : place.hashCode()) + this.getClass().hashCode();
     }
 }

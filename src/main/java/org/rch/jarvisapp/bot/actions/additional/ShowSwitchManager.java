@@ -6,6 +6,7 @@ import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.comparators.LightComparator;
 import org.rch.jarvisapp.bot.ui.keyboard.SwitchManageKeyBoard;
 import org.rch.jarvisapp.smarthome.SmartHome;
+import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
 import java.util.List;
@@ -13,9 +14,9 @@ import java.util.List;
 public class ShowSwitchManager implements Action {
     public final static String description = "Активатор";
     SmartHome smartHome = AppContextHolder.getSH();
-    String place;
+    Place place;
 
-    public ShowSwitchManager(String place) {
+    public ShowSwitchManager(Place place) {
         this.place = place;
     }
 
@@ -29,7 +30,7 @@ public class ShowSwitchManager implements Action {
             kb.addDevice(light);
 
         tile.update()
-                .setCaption(description + " " + smartHome.getPlaceByCode(place).getName())
+                .setCaption(description + " " + place.getName())
                 .setKeyboard(kb);
     }
 }

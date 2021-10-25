@@ -116,7 +116,7 @@ public enum Menu {
         try {
             Action action = actionClass.newInstance();
             if (isPlaceGrouping && action instanceof RunnableByPlace)
-                ((RunnableByPlace)action).setPlace("");
+                ((RunnableByPlace)action).setPlace(null);
 
             return action;
         } catch (InstantiationException | IllegalAccessException e) {

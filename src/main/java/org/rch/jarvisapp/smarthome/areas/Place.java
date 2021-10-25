@@ -26,7 +26,13 @@ public abstract class Place {
         this.parent = AppContextHolder.getSH().getPlaceByCode(parent);
         this.code = code;
         this.name = name;
-        this.row = row != null ? row : defaultSortValue;
+        this.row = row != null ? row : defaultSortValue;//todo while it's not working that way (row must be in list)
         this.priority = priority != null ? priority : defaultSortValue;
     }
+
+    //todo временное решение для поиска красивого решения
+    public String getFormattedName(){
+        return "[ " + getName().toUpperCase() + " ]";
+    }
+
 }

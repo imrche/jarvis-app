@@ -58,11 +58,10 @@ public class SmartHome {
         return result;
     }
 
-    public List<Place> getPlaceChildren(String parent){
-        Place parentPlace = getPlaceByCode(parent);
+    public List<Place> getPlaceChildren(Place parent){
         List<Place> result = new ArrayList<>();
         for (Place place : places)
-            if (place.getParent() == parentPlace)
+            if (place.getParent() == parent)
                 result.add(place);
 
         return result;
@@ -78,13 +77,12 @@ public class SmartHome {
         return result;
     }
 
-    public <T extends Device> List<T> getDevicesByType(Class<T> type, String place){
+    public <T extends Device> List<T> getDevicesByType(Class<T> type, Place place){
         return getDevicesByType(type)
                 .stream()
-                .filter(device -> device.getPlacement() == getPlaceByCode(place))
+                .filter(device -> device.getPlacement() == place)
                 .collect(Collectors.toList());
     }
-
 
     public <T extends Device> List<T> getDevicesByType(Class<T> type){
         List<T> result = new ArrayList<>();

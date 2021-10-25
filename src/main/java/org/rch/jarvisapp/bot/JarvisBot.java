@@ -82,8 +82,7 @@ public class JarvisBot extends TelegramWebhookBot {
                 }
 
                 //основные действия через callback (кэшированный)
-                //ActionData actionData = actionCache.getCallBack(update.getCallbackQuery().getData());
-                Action actionData = actionCache.getCallBack(update.getCallbackQuery().getData());
+                Action actionData = actionCache.getCallBack(callBackData);
 
                 if (actionData == null)
                     throw new BotException("CallBack " + update.getCallbackQuery().getData() + " не существует");

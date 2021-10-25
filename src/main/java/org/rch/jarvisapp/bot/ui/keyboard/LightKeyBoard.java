@@ -9,6 +9,7 @@ import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
+import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Light;
 
@@ -25,10 +26,10 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     public static final String ADD = "Дополнительно";
 
     public LightKeyBoard() {
-        this("");//todo
+        this(null);//todo
     }
 
-    public LightKeyBoard(String place){
+    public LightKeyBoard(Place place){
         super();
         groupButtonRow.add(new Button("[Весь свет]", CommonCallBack.empty.name()));
         groupButtonRow.add(new Button(ON, CommonCallBack.empty.name()));

@@ -20,9 +20,9 @@ import org.rch.jarvisapp.smarthome.areas.Place;
 
 public class ShowAdditionalPropertiesAction implements Action, RunnableByPlace {
     Class<?> classFrom;
-    String place;
+    Place place;
 
-    public ShowAdditionalPropertiesAction(String place) {
+    public ShowAdditionalPropertiesAction(Place place) {
         this.place = place;
     }
 
@@ -41,13 +41,13 @@ public class ShowAdditionalPropertiesAction implements Action, RunnableByPlace {
     }
 
     @Override
-    public void setPlace(String place) {
+    public void setPlace(Place place) {
         this.place = place;
     }
 
 
     @Override
     public int hashCode() {
-        return Strings.isEmpty(place) ? 0 : place.hashCode() + this.getClass().hashCode();//todo
+        return place == null ? 0 : place.hashCode() + this.getClass().hashCode();//todo
     }
 }
