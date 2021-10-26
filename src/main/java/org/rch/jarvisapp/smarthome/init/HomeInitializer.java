@@ -8,6 +8,7 @@ import org.rch.jarvisapp.bot.ui.button.comparators.PlaceComparator;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
+import org.rch.jarvisapp.smarthome.areas.HomeRoot;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.areas.Room;
 import org.rch.jarvisapp.smarthome.devices.*;
@@ -51,6 +52,7 @@ public class HomeInitializer {
     public HomeInitializer(Api api, SmartHome smartHome) {
         this.api = api;
         this.smartHome = smartHome;
+
     }
 
     public void init() throws Exception {

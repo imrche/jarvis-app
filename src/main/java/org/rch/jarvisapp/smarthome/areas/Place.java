@@ -23,7 +23,9 @@ public abstract class Place {
     Place parent;
 
     public Place(String code, String name, String parent, Integer row, Integer priority) {
-        this.parent = AppContextHolder.getSH().getPlaceByCode(parent);
+        Place parentObject = AppContextHolder.getSH().getPlaceByCode(parent);
+
+        this.parent = parentObject != null ? parentObject : HomeRoot.home;
         this.code = code;
         this.name = name;
         this.row = row != null ? row : defaultSortValue;//todo while it's not working that way (row must be in list)

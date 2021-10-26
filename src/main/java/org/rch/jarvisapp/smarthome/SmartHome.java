@@ -7,11 +7,13 @@ import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
+import org.rch.jarvisapp.smarthome.devices.Light;
 import org.rch.jarvisapp.smarthome.devices.Sensor;
 import org.rch.jarvisapp.smarthome.devices.filters.Predicates;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -104,12 +106,19 @@ public class SmartHome {
         return false;
     }
 
-    public <T extends Device> List<Device> getDevicesWithFilter(List<Predicate<Device>> list){
+    public <T extends Device> List<T> getDevicesWithFilter(List<Predicate<Device>> list, Class<T> class2convert){
+        List<Device> listDevice = devices
+                                    .stream()
+                                    .filter(Predicates.accumulator(list))
+                                    .collect(Collectors.toList());
 
-        return devices
-                .stream()
-                .filter(Predicates.accumulator(list))
+        return  listDevice.stream()
+                .filter(class2convert::isInstance)
+                .map(class2convert::cast)
                 .collect(Collectors.toList());
+
+//        return ((List<T>) (Object) listDevice);
+
     }
 
 }

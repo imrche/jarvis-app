@@ -13,7 +13,7 @@ import static org.rch.jarvisapp.smarthome.init.enums.FieldTypes.*;
 @Data
 @FieldDefaults(level=AccessLevel.PRIVATE)
 @EqualsAndHashCode(callSuper = true)
-public class Light extends Device implements TimerSupport {
+public class Light extends Device {
 
     @JsonProperty
     String name;

@@ -6,13 +6,18 @@ import org.rch.jarvisapp.bot.actions.StubAction;
 import org.rch.jarvisapp.bot.actions.devices.ShowRangeHood;
 import org.rch.jarvisapp.bot.actions.gates.ShowGates;
 import org.rch.jarvisapp.bot.actions.lights.ShowLight;
+import org.rch.jarvisapp.bot.actions.scenario.ShowLightsOn;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
 import org.rch.jarvisapp.bot.actions.valves.ShowValve;
 import org.rch.jarvisapp.bot.actions.windows.ShowWindowsStatus;
+import org.rch.jarvisapp.smarthome.areas.HomeRoot;
+import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Valve;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
+
+import java.lang.reflect.InvocationTargetException;
 
 public enum Menu {
     controlLights           (BotCommand.control,1,"Освещение", ShowLight.class,true),
@@ -38,6 +43,8 @@ public enum Menu {
 
     warningsTemperature     (BotCommand.warnings,1,"Температура", StubAction.class),
     warningsHumidity        (BotCommand.warnings,2,"Влажность", StubAction.class),
+
+    showTurnedOnLight       (BotCommand.scenario,1,"Невыключенный свет", ShowLightsOn.class),
 
 
     securityDoorLock        (BotCommand.security,1, "Входной замок", StubAction.class),
@@ -88,7 +95,6 @@ public enum Menu {
         this.description = description;
     }
 
-
     public BotCommand getBotCommand() {
         return botCommand;
     }
@@ -114,12 +120,14 @@ public enum Menu {
 
     public Action getActionInstance(){
         try {
-            Action action = actionClass.newInstance();
-            if (isPlaceGrouping && action instanceof RunnableByPlace)
-                ((RunnableByPlace)action).setPlace(null);
+            Action action;
+            if (isPlaceGrouping && RunnableByPlace.class.isAssignableFrom(actionClass))
+                action = actionClass.getConstructor(Place.class).newInstance(HomeRoot.home);
+            else
+                action = actionClass.newInstance();
 
             return action;
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             return null; //todo throw exception
         }
     }

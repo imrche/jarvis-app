@@ -121,7 +121,8 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
 
     @Override
     public List<List<Button>> getInlineButtons(){
-        List<List<Button>> kb = new ArrayList<>(super.getButtons());
+        //List<List<Button>> kb = new ArrayList<>(super.getButtons());
+        List<List<Button>> kb = new ArrayList<>(super.getVisibleButtons());
 
         for (Button button : getButtonsList()) {
             if (button instanceof LightButton) {

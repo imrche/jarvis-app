@@ -18,6 +18,19 @@ import java.util.stream.Collectors;
 public class KeyBoard{
     List<List<Button>> buttons = new ArrayList<>();
 
+    public List<List<Button>> getVisibleButtons(){
+        List<List<Button>> result = new ArrayList<>();
+        for(List<Button> lBtn : buttons){
+            List<Button> lBtnRes = new ArrayList<>();
+            for (Button btn : lBtn){
+                if (btn.isVisible())
+                    lBtnRes.add(btn);
+            }
+            result.add(lBtnRes);
+        }
+        return result;
+    }
+
     public KeyBoard(){}
 
     public List<List<Button>> getInlineButtons(){

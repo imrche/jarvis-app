@@ -2,12 +2,11 @@ package org.rch.jarvisapp.bot.dataobject;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.rch.jarvisapp.smarthome.devices.Device;
-
 import javax.annotation.Nullable;
 
 public class SwitcherData extends DataObject{
+
 
     private static class SwitcherElement extends DTOElement {
         @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -27,7 +26,7 @@ public class SwitcherData extends DataObject{
     }
 
     public SwitcherData(String json, Class<?> clazz) throws JsonProcessingException {
-        super(json,clazz);
+        super(json, clazz);
     }
 
     public SwitcherData(String json) throws JsonProcessingException {
