@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class SmartHome {
     List<Device> devices = new ArrayList<>();
     List<Place> places = new ArrayList<>();
+    List<Scenario> scenarios = new ArrayList<>();
 
     Api api;
 
@@ -35,9 +36,14 @@ public class SmartHome {
         places.add(place);
     }
 
+    public void addScenario(Scenario scenario){
+        scenarios.add(scenario);
+    }
+
     public void clearData(){
         devices.clear();
         places.clear();
+        scenarios.clear();
     }
 
     public Place getPlaceByCode(String code){

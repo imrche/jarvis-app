@@ -6,12 +6,12 @@ import org.rch.jarvisapp.bot.actions.StubAction;
 import org.rch.jarvisapp.bot.actions.devices.ShowRangeHood;
 import org.rch.jarvisapp.bot.actions.gates.ShowGates;
 import org.rch.jarvisapp.bot.actions.lights.ShowLight;
+import org.rch.jarvisapp.bot.actions.scenario.ShowAllScenarios;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
 import org.rch.jarvisapp.bot.actions.valves.ShowValve;
 import org.rch.jarvisapp.bot.actions.windows.ShowWindowsStatus;
-import org.rch.jarvisapp.smarthome.devices.Valve;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
 
 public enum Menu {
@@ -38,6 +38,8 @@ public enum Menu {
 
     warningsTemperature     (BotCommand.warnings,1,"Температура", StubAction.class),
     warningsHumidity        (BotCommand.warnings,2,"Влажность", StubAction.class),
+
+    scenarios               (BotCommand.scenario,1,"Сценарии", ShowAllScenarios.class),
 
 
     securityDoorLock        (BotCommand.security,1, "Входной замок", StubAction.class),
