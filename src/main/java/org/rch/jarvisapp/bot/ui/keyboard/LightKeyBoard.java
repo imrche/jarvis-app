@@ -65,6 +65,13 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
         return groupButtonRow.stream().filter(Button::isVisible).collect(Collectors.toList());
     }
 
+    public void hideAllAdditionalBtn(){
+        hideGroupButton();//todo сделать по уму
+        for (Button btn : additionalPropertiesButtonRow)
+            btn.setVisible(false);
+    }
+
+
     private void defineVisibilityGroupButton(){
         Button btnOn = getGroupButton(ON);
         Button btnOff = getGroupButton(OFF);

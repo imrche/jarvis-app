@@ -7,6 +7,7 @@ import org.rch.jarvisapp.bot.actions.devices.ShowRangeHood;
 import org.rch.jarvisapp.bot.actions.gates.ShowGates;
 import org.rch.jarvisapp.bot.actions.lights.ShowLight;
 import org.rch.jarvisapp.bot.actions.scenario.ShowLightsOn;
+import org.rch.jarvisapp.bot.actions.scenario.ShowLightsOnFloor;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
@@ -45,6 +46,7 @@ public enum Menu {
     warningsHumidity        (BotCommand.warnings,2,"Влажность", StubAction.class),
 
     showTurnedOnLight       (BotCommand.scenario,1,"Невыключенный свет", ShowLightsOn.class),
+    showTurnedOnFloor       (BotCommand.scenario,2,"Свет на этаже", ShowLightsOnFloor.class),
 
 
     securityDoorLock        (BotCommand.security,1, "Входной замок", StubAction.class),

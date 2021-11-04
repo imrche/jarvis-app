@@ -11,6 +11,7 @@ import org.rch.jarvisapp.smarthome.devices.Light;
 import org.rch.jarvisapp.smarthome.devices.Sensor;
 import org.rch.jarvisapp.smarthome.devices.filters.Predicates;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Nullable;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 public class SmartHome {
     List<Device> devices = new ArrayList<>();
     List<Place> places = new ArrayList<>();
+
+  //  @Autowired
+   // Predicates predicates;
 
     Api api;
 
@@ -120,6 +124,22 @@ public class SmartHome {
 //        return ((List<T>) (Object) listDevice);
 
     }
+
+
+/*    public List<Device> getAllDeviceOfPlace(Place place){
+        List<Device> result = new ArrayList<>();
+        List<Place> places = getPlaceChildren(place);
+
+        for (Place pl : places){
+            result.add()
+        }
+
+
+        for(Device dev : getDevices()){
+            if (dev.getPlacement() == place)
+
+        }
+    }*/
 
 }
 
