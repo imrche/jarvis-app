@@ -39,6 +39,7 @@ public class Api {
     final String PLACES_INIT = "/areas";//todo places
     final String DEVICES_INIT = "/devices";
     final String SCENARIOS_INIT = "/scenarios";
+    final String SCENARIO_STATUS = "/scenario/status";
     final String SCENARIO_RUN = "/scenario";
 
     private String getURL() {
@@ -65,6 +66,15 @@ public class Api {
         String response = NetUtil.sendGET(getURL() + SCENARIOS_INIT).get(NetUtil.RESPONSE);
         //System.out.println("2 - "+response);
         return new JSONArray(response);
+    }
+
+    public ScenariosData getScenariosStatus(ScenariosData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + SCENARIO_STATUS, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new ScenariosData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Получение статусов сценариев - ответ " + response, e);
+        }
     }
 
     public SwitcherData getStatusLight(SwitcherData req) throws HomeApiWrongResponseData {

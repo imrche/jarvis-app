@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.rch.jarvisapp.bot.enums.BotCommand;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
+import org.rch.jarvisapp.smarthome.Scenario;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class TilePool {
     Api api;
 
     public List<Tile> tileList = new ArrayList<>();
-    Map<Integer, List<Integer>> feedBackLink = new HashMap<>();
+    Map<Integer, List<Object>> feedBackLink = new HashMap<>();
 
     public Tile build(BotCommand command){
         Tile tile = new Tile(command.getDescription(),new MenuKeyBoard(command));
@@ -41,10 +42,12 @@ public class TilePool {
         if (tile == null)
             return;
 
-        List<Integer> listDevice = new ArrayList<>();
+        List<Object> listDevice = new ArrayList<>();
         for (KeyBoard kb : tile.content){
             if (kb instanceof DeviceContainer)
                 listDevice.addAll(((DeviceContainer)kb).getDeviceList().stream().map(Device::getId).collect(Collectors.toList()));
+            if (kb instanceof ScenarioContainer)
+                listDevice.addAll(((ScenarioContainer)kb).getScenarioList().stream().map(Scenario::getCode).collect(Collectors.toList()));
         }
 
         listDevice = listDevice.stream().distinct().collect(Collectors.toList());

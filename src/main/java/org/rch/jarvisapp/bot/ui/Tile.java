@@ -6,6 +6,7 @@ import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
+import org.rch.jarvisapp.bot.ui.button.func_interface.TileCaptionUpdater;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -17,6 +18,9 @@ public class Tile{
     Stack<Tile> historyStack = new Stack<>();
     Integer messageId;
     String caption;
+
+    TileCaptionUpdater tileCaptionUpdater;
+
     List<KeyBoard> content = new ArrayList<>();
     Button stepBack = new Button("Назад", CommonCallBack.stepBackTile.name());
 
@@ -32,6 +36,9 @@ public class Tile{
 
     public Tile refresh() throws HomeApiWrongResponseData {
         //todo сделать приватной, чтобы избежать вызовов ненужных
+        if (tileCaptionUpdater != null)
+            setCaption(tileCaptionUpdater.getCaption());
+
         for (KeyBoard kb : content)
             kb.refresh();
 
@@ -103,9 +110,17 @@ public class Tile{
 
     public Tile setCaption(String caption){
         this.caption = caption;
+
         return this;
     }
 
+    public Tile setTileCaptionUpdater(TileCaptionUpdater tcu){
+        this.tileCaptionUpdater = tcu;
+        if (tcu != null)
+            setCaption(tcu.getCaption());
+
+        return this;
+    }
 
     public Tile update(){
         //предполагается что после update keyboard будет создан новый, а не изменен старый
@@ -121,7 +136,9 @@ public class Tile{
 
     public Tile stepBack() throws HomeApiWrongResponseData {
         Tile t = historyStack.pop();
-        this.caption = t.caption;
+        setTileCaptionUpdater(null);
+        setCaption(t.caption);
+
         this.content = t.content;
         this.parseMode = t.parseMode;
 

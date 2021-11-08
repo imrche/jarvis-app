@@ -24,6 +24,7 @@ public class RunScenarioCommand implements Action {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         ScenarioData data = new ScenarioData(scenario.getCode(), btn.getCode());
         api.runScenario(data);
+        tile.refresh();//потому что кнопки не меняются
     }
 
     @Override
