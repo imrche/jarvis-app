@@ -18,7 +18,7 @@ public class ScenarioListKeyBoard extends KeyBoard implements ScenarioContainer 
     public ScenarioListKeyBoard() {
         patternSD.addScenario(smartHome.getScenarios());
 
-        int i = 0;
+        int i = 1;
         for (Scenario scenario : smartHome.getScenarios())
             addButton(i++, new ScenarioButton(scenario));
     }

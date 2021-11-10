@@ -18,7 +18,7 @@ public class ShowAllScenarios implements Action {
 
         tile.update()
                 .setCaption(description)
-                .setParseMode(ParseMode.Markdown)
+               // .setParseMode(ParseMode.Markdown)
                 .setKeyboard(kb);
     }
     @Override

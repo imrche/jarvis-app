@@ -6,8 +6,12 @@ import org.rch.jarvisapp.bot.enums.BotCommand;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.enums.Stickers;
 import org.rch.jarvisapp.bot.exceptions.BotException;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.*;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
+import org.rch.jarvisapp.utils.NetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
@@ -17,6 +21,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Component
 public class JarvisBot extends TelegramWebhookBot {
+    static Logger logger = LoggerFactory.getLogger(JarvisBot.class);
     @Autowired
     MessageBuilder messageBuilder;
     BotConfig botConfig;
@@ -94,12 +99,14 @@ public class JarvisBot extends TelegramWebhookBot {
 
                 return messageBuilder.emptyAnswer();
             }
-        } catch (BotException botException){
+        } catch (BotException | HomeApiWrongResponseData botException){
+            logger.error("Ошибка",botException);
             if (update.hasMessage())
                 return messageBuilder.send(botException.getMessage());
             else
                 return messageBuilder.popup(update.getCallbackQuery().getId(),botException.getMessage());
         } catch (Exception e) {
+            logger.error("Что-то пошло не так ",e);
             if (update.hasMessage())
                 return messageBuilder.send("Что-то пошло не так " + e.toString());
             else

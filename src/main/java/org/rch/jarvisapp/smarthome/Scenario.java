@@ -33,7 +33,7 @@ public class Scenario {
     }
 
     public String visualizeStatus(String statusCode, Boolean detailed){
-        if ("off".equals(statusCode))
+        if ("off".equals(statusCode) || statusCode == null)
             return "";
 
         if (!detailed)
