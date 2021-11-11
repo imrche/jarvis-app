@@ -44,6 +44,7 @@ public class NetUtil {
         return result;
     }
 
+    //todo обработать таймаут
     public static Map<String, String> sendPOST(String url, String body)  {
         logger.debug("SEND POST " + url + " - " + body);
         Util.logStackTrace(10);

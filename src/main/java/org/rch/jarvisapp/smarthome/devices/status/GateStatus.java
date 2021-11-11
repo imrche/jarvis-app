@@ -3,6 +3,9 @@ package org.rch.jarvisapp.smarthome.devices.status;
 public enum GateStatus {
     open,
     close,
-    NA,
-    intermediate
+    opening,
+    closing,
+    partialOpen,
+    alarm,
+    NA
 }
