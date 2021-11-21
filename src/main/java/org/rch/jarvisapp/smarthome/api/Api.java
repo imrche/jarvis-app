@@ -41,6 +41,8 @@ public class Api {
     final String SCENARIOS_INIT = "/scenarios";
     final String SCENARIO_STATUS = "/scenario/status";
     final String SCENARIO_RUN = "/scenario";
+    final String SPEAKER_COMMAND = "/speaker/command";
+    final String SPEAKER_STATUS = "/speaker/status";
 
     private String getURL() {
         return proto + "://" + ip + ":" + port;
@@ -76,6 +78,12 @@ public class Api {
             throw new HomeApiWrongResponseData("Получение статусов сценариев - ответ " + response, e);
         }
     }
+
+    public void sendSpeakerCommand(SpeakerData req) {
+        NetUtil.sendPOST(getURL() + SPEAKER_COMMAND, req.getData());
+    }
+
+
 
     public SwitcherData getStatusLight(SwitcherData req) throws HomeApiWrongResponseData {
         String response = NetUtil.sendPOST(getURL() + STATUS_LIGHT, req.getData()).get(NetUtil.RESPONSE);

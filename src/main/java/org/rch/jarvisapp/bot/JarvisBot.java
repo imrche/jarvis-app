@@ -1,5 +1,6 @@
 package org.rch.jarvisapp.bot;
 
+import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.cache.ActionCache;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.enums.BotCommand;
@@ -8,6 +9,8 @@ import org.rch.jarvisapp.bot.enums.Stickers;
 import org.rch.jarvisapp.bot.exceptions.BotException;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.*;
+import org.rch.jarvisapp.bot.ui.button.Button;
+import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
 import org.rch.jarvisapp.utils.NetUtil;
 import org.slf4j.Logger;
@@ -16,8 +19,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class JarvisBot extends TelegramWebhookBot {
@@ -27,6 +43,11 @@ public class JarvisBot extends TelegramWebhookBot {
     BotConfig botConfig;
     ActionCache actionCache;
     TilePool tilePool;
+
+
+
+
+    Message message1;
 
     String lastCallBackId = "";
 
@@ -52,8 +73,54 @@ public class JarvisBot extends TelegramWebhookBot {
                     } catch (IllegalArgumentException e) {
                         throw new BotException("Неопознанная команда " + message.getText());
                     }
+                } else if (tilePool.getTileWithTextInputActivated() != null) {
+                    Tile tileWith = tilePool.getTileWithTextInputActivated();
+                    for (KeyBoard keyBoard : tileWith.getContent()){
+                        if (keyBoard instanceof TextInputSupportable)
+                            ((TextInputSupportable)keyBoard).ProceedTextInput(message.getText());
+                    }
+                    messageBuilder.popupAsync("Успешно отправлено");
+                    return messageBuilder.emptyAnswer();
                 } else {
-                    return messageBuilder.sendStickerAsync(Stickers.what);
+
+                    KeyBoard kb2 = new KeyBoard();
+                    Button btn2 = new Button();
+                    btn2.setCaption("hi");
+                    btn2.setCallBack("empty");
+                    kb2.addButton(1,btn2);
+
+                    InlineKeyboardMarkup kb = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> mList = new ArrayList<>();
+                    for (List<Button> lBtn : kb2.getInlineButtons()){
+                        List<InlineKeyboardButton> list = new ArrayList<>();
+                        for (Button btn : lBtn) list.add(btn.getInlineButton());
+                        if (list.size() > 0) mList.add(list);
+                    }
+                    kb.setKeyboard(mList);
+
+                    if (message.getText().equals("1"))
+                       message1  = execute(new SendPhoto().setChatId(getChat()).setCaption("mess").setReplyMarkup(kb).setPhoto("http://avatars.yandex.net/get-music-content/63210/96272f0b.a.626134-4/300x300"));
+                    else if (message.getText().equals("2")){
+                        InputMediaPhoto media = new InputMediaPhoto();
+                        media.setMedia("http://avatars.yandex.net/get-music-content/63210/96272f0b.a.626134-4/600x600");
+                        EditMessageMedia messageMed = new EditMessageMedia()
+                                .setMessageId(message1.getMessageId())
+
+                                //.se(text)
+                                //  .setParseMode(parseMode != null ? parseMode.name() : null)
+                                .setChatId(getChat())
+                                .setReplyMarkup(kb);
+                        messageMed.setMedia(media);
+                        execute(messageMed);
+                    }
+                    else if (message.getText().equals("3")){
+                        DeleteMessage delNess = new DeleteMessage().setMessageId(message1.getMessageId()).setChatId(getChat());
+                        execute(delNess);
+
+                    }
+
+
+                    //return messageBuilder.sendStickerAsync(Stickers.what);
                 }
             }
 
@@ -69,7 +136,7 @@ public class JarvisBot extends TelegramWebhookBot {
 
                 //кнопка EMPTY
                 if (CommonCallBack.empty.is(callBackData))
-                    return messageBuilder.popup(update.getCallbackQuery().getId(), "Пусто");
+                    return messageBuilder.popup("Пусто");
 
                 //кнопка НАЗАД
                 if (CommonCallBack.stepBackTile.is(callBackData)) {
@@ -104,13 +171,13 @@ public class JarvisBot extends TelegramWebhookBot {
             if (update.hasMessage())
                 return messageBuilder.send(botException.getMessage());
             else
-                return messageBuilder.popup(update.getCallbackQuery().getId(),botException.getMessage());
+                return messageBuilder.popup(botException.getMessage());
         } catch (Exception e) {
             logger.error("Что-то пошло не так ",e);
             if (update.hasMessage())
                 return messageBuilder.send("Что-то пошло не так " + e.toString());
             else
-                return messageBuilder.popup(update.getCallbackQuery().getId(),"Что-то пошло не так " + e.toString());
+                return messageBuilder.popup("Что-то пошло не так " + e.toString());
         }
 
         return messageBuilder.emptyAnswer();
