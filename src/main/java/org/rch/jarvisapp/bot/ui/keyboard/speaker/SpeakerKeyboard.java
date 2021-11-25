@@ -11,6 +11,7 @@ import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.yandexStation.StationState;
+import org.rch.jarvisapp.bot.ui.yandexStation.Track;
 import org.rch.jarvisapp.bot.ui.yandexStation.TrackBuilder;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
@@ -48,7 +49,14 @@ public class SpeakerKeyboard extends KeyBoard implements DeviceContainer {
         SpeakerStatusData ssd = api.getSpeakerStatus(speakerData);
         SpeakerStatusData.SpeakerElement se =  ssd.getDevice(speaker);
 
-        info.setCaption(StationState.getStateSymbol(se.state) + " +какая-то еще инфа");
+        String trackInfo = "";
+        if (StationState.PLAYING.name().equals(se.state)){
+            Track track = trackBuilder.build(se);
+            trackInfo = track.getArtist() + " - " + track.getTitle();
+        }
+
+
+        info.setCaption(StationState.getStateSymbol(se.state) + trackInfo);
 
     }
 

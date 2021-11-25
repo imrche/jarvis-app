@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.actions.speaker.Volumable;
 import org.rch.jarvisapp.bot.actions.speaker.command.SetVolumeTTS;
 import org.rch.jarvisapp.bot.actions.speaker.player.SetProgress;
+import org.rch.jarvisapp.bot.actions.speaker.player.SetVolume;
 import org.rch.jarvisapp.bot.actions.speaker.player.SimplePlayerCommand;
 import org.rch.jarvisapp.bot.dataobject.SpeakerData;
 import org.rch.jarvisapp.bot.dataobject.SpeakerStatusData;
@@ -70,13 +71,13 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
         progressBarScale.put(6,78);
         progressBarScale.put(7,91);
 
-        volumeLineScale.put(0,5);
+        volumeLineScale.put(0,0);
         volumeLineScale.put(1,10);
-        volumeLineScale.put(2,25);
+        volumeLineScale.put(2,30);
         volumeLineScale.put(3,40);
-        volumeLineScale.put(4,55);
+        volumeLineScale.put(4,60);
         volumeLineScale.put(5,70);
-        volumeLineScale.put(6,85);
+        volumeLineScale.put(6,90);
         volumeLineScale.put(7,100);
     }
 
@@ -88,7 +89,7 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
             progressBar.add(new Button(String.valueOf(progressBarLine[j]), new SetProgress(speaker, j)));
 
         for (int j = 0; j < volumeLine.length; j++)
-            volume.add(new Button(String.valueOf(volumeLine[j]), new SetVolumeTTS(j)));
+            volume.add(new Button(String.valueOf(volumeLine[j]), new SetVolume(speaker, j)));
 
         int i = 1;
         addButton(i, info);
@@ -116,9 +117,9 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
 
 
 
-    public Integer getPercentVolumeLevel(){
+    public Integer getPercentVolumeLevel(Integer volume){
         //todo def value 20
-        return volumeLineScale.get(curVolumeLevel);
+        return volumeLineScale.get(volume);
     }
 
     public Integer getPercentProgressLevel(Integer level){
