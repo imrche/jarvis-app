@@ -1,8 +1,8 @@
 package org.rch.jarvisapp.bot.ui.keyboard.speaker;
 
-import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.TextInputSupportable;
-import org.rch.jarvisapp.bot.actions.speaker.command.SetVolume;
+import org.rch.jarvisapp.bot.actions.speaker.Volumable;
+import org.rch.jarvisapp.bot.actions.speaker.command.SetVolumeTTS;
 import org.rch.jarvisapp.bot.actions.speaker.command.SpeakerTTS;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.ui.button.Button;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TTSKeyboard extends KeyBoard implements TextInputSupportable {
+public class TTSKeyboard extends KeyBoard implements TextInputSupportable, Volumable {
 
     SpeakerTTS action;
     List<Button> volume = new ArrayList<>();
@@ -37,15 +37,16 @@ public class TTSKeyboard extends KeyBoard implements TextInputSupportable {
         addButton(i++, new Button("Недавнее", CommonCallBack.empty.name()));
         addButton(i, new Button("vol.", CommonCallBack.empty.name()));
 
-        for (int x=0;x<5;x++)
-            volume.add(new Button(" ", new SetVolume(x+1)));
+        for (int x = 0; x < 5; x++)
+            volume.add(new Button(" ", new SetVolumeTTS(x + 1)));
 
-        for (Button btn : volume){
-            addButton(i,btn);
-        }
+        for (Button btn : volume)
+            addButton(i, btn);
+
         setVolume(2);
     }
 
+    @Override
     public void setVolume(Integer volume){
         curVolumeLevel = volume;
         //curVolumeLevel = Integer.parseInt(volume);

@@ -6,6 +6,7 @@ import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
+import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -28,9 +29,8 @@ public class TilePlayer extends Tile {
         return this;
     }
 
-    public TilePlayer(String image, KeyBoard keyBoard) {
+    public TilePlayer(KeyBoard keyBoard) {
         this();
-        this.image = image;
         content.add(keyBoard);
         AppContextHolder.getTilePool().addTile(this);
     }
@@ -39,9 +39,11 @@ public class TilePlayer extends Tile {
 
     @Override
     public TilePlayer refresh() throws HomeApiWrongResponseData {
-        for (KeyBoard kb : content)
+        for (KeyBoard kb : content) {
             kb.refresh();
-
+            if (kb instanceof PlayerKeyboard)
+                setImage(((PlayerKeyboard)kb).getCoverURL());
+        }
         return this;
     }
 

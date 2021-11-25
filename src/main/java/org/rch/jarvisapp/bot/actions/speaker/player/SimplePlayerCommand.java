@@ -11,10 +11,10 @@ import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
 public class SimplePlayerCommand implements Action {
-    private final Api api = AppContextHolder.getApi();
-    private final Speaker speaker;
-    private final SpeakerData.Command command;
-    private SpeakerData data = new SpeakerData();
+    protected final Api api = AppContextHolder.getApi();
+    protected final Speaker speaker;
+    protected final SpeakerData.Command command;
+    protected SpeakerData data = new SpeakerData();
 
     private final String typeCommand = "playerControl";
 
@@ -28,6 +28,10 @@ public class SimplePlayerCommand implements Action {
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
         api.sendSpeakerCommand(data);
+
+
+
+
     }
 
     @Override

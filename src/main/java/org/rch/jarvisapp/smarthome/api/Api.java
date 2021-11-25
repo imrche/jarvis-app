@@ -84,6 +84,14 @@ public class Api {
     }
 
 
+    public SpeakerStatusData getSpeakerStatus(SpeakerData req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + SPEAKER_STATUS, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SpeakerStatusData(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Статус колонок - ответ " + response, e);
+        }
+    }
 
     public SwitcherData getStatusLight(SwitcherData req) throws HomeApiWrongResponseData {
         String response = NetUtil.sendPOST(getURL() + STATUS_LIGHT, req.getData()).get(NetUtil.RESPONSE);

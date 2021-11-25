@@ -39,7 +39,8 @@ public class SpeakerData extends DataObject{
         next,
         prev,
         forward,
-        backward
+        backward,
+        rewind
     }
 
     public SpeakerData(String json, Class<?> clazz) throws JsonProcessingException {
@@ -53,12 +54,16 @@ public class SpeakerData extends DataObject{
     public SpeakerData() {
     }
 
-    public SpeakerElement addSpeaker(Device device, String typeCommand){
+    public SpeakerData addSpeaker(Device device, String typeCommand){
         SpeakerElement e = (SpeakerElement) addDevice(device, SpeakerElement.class);
         e.typeCommand = typeCommand;
-        return e;
+        return this;
     }
 
+    public SpeakerData addSpeaker(Device device){
+        SpeakerElement e = (SpeakerElement) addDevice(device, SpeakerElement.class);
+        return this;
+    }
 
     public void addCommand(Device device, Command command, String value){
         SpeakerElement element = getDevice(device);
@@ -80,6 +85,17 @@ public class SpeakerData extends DataObject{
 
     public void addCommand(Device device, Command command){
         addCommand(device,command,null);
+    }
+
+    public void setValueFor(Device device, Command command, String value){
+        SpeakerElement element = getDevice(device);
+        for (Map<String,String> cmd : element.data){
+            String curCmd = cmd.get("command");
+            if (curCmd.equals(command.name())) {
+                cmd.put("value", value);
+                return;
+            }
+        }
     }
 
 

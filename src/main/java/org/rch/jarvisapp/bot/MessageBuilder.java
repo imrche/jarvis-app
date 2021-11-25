@@ -99,7 +99,8 @@ public class MessageBuilder {
             bot.execute(message);
         } catch (TelegramApiRequestException e) {
             logger.error(e.getApiResponse(), e);
-            popupAsync(e.getApiResponse());
+            if (!e.getApiResponse().contains("message is not modified"))
+                popupAsync(e.getApiResponse());
         } catch (TelegramApiException e ){
             logger.error(e.getMessage(), e);
             popupAsync(e.getMessage());
@@ -120,7 +121,9 @@ public class MessageBuilder {
             bot.execute(message);
         } catch (TelegramApiRequestException e) {
             logger.error(e.getApiResponse(), e);
-            popupAsync(e.getApiResponse());
+            if (!e.getApiResponse().contains("message is not modified"))
+                popupAsync(e.getApiResponse());
+            emptyAnswer();
         } catch (TelegramApiException e ){
             logger.error(e.getMessage(), e);
             popupAsync(e.getMessage());
