@@ -4,7 +4,6 @@ import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.TilePlayer;
-import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
@@ -19,8 +18,9 @@ public class ShowSpeakerPlayer implements Action {
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
-        KeyBoard kb = new PlayerKeyboard(speaker);
+        PlayerKeyboard kb = new PlayerKeyboard(speaker);
         Tile tilePlayer = new TilePlayer(kb);
+        kb.setTile(tilePlayer);
 
         tilePlayer.refresh();
         tilePlayer.publish();

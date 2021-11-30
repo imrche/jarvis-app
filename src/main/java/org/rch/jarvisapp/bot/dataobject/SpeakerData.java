@@ -98,11 +98,9 @@ public class SpeakerData extends DataObject{
         }
     }
 
-
     public void setTypeCommand(SpeakerElement element, String value){
         element.typeCommand = value;
     }
-
 
     public SpeakerElement getDevice(Device device){
         DTOElement element = getDeviceDTOElement(device);
@@ -116,10 +114,6 @@ public class SpeakerData extends DataObject{
     public int getDeviceCount(){
         return data.size();
     }
-
-   // public void mergeDTO(SpeakerData newData){
- //       data.addAll(newData.getListElements());
- //   }
 
     @Override
     public boolean equals(Object obj) {

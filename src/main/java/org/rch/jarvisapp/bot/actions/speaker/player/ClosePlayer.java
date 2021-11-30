@@ -2,12 +2,12 @@ package org.rch.jarvisapp.bot.actions.speaker.player;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
-import org.rch.jarvisapp.bot.dataobject.SpeakerData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.TilePool;
+import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
+import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
 import org.rch.jarvisapp.smarthome.api.Api;
-import org.rch.jarvisapp.smarthome.devices.Speaker;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -30,6 +30,12 @@ public class ClosePlayer implements Action {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         tilePool.clearFeedBack(messageId);
         tilePool.removeTile(tile);
+
+        for (KeyBoard kb : tile.getContent()) {
+            if (kb instanceof PlayerKeyboard)
+                ((PlayerKeyboard) kb).deletePlayer();
+        }
+
         try {
             AppContextHolder.getBot().execute(deleteMessage);
         } catch (TelegramApiException e) {

@@ -9,8 +9,6 @@ import org.rch.jarvisapp.bot.ui.keyboard.speaker.SpeakerKeyboard;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
 public class ShowSpeaker implements Action {
-    public final static String description = "Сценарии";
-
     Speaker speaker;
 
     public ShowSpeaker(Speaker speaker) {
@@ -26,6 +24,7 @@ public class ShowSpeaker implements Action {
                 .setParseMode(ParseMode.Markdown)
                 .setKeyboard(kb);
     }
+
     @Override
     public int hashCode() {
         return (speaker.hashCode() + this.getClass().hashCode());

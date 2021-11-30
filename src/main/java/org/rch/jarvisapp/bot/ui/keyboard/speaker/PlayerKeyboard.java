@@ -3,7 +3,6 @@ package org.rch.jarvisapp.bot.ui.keyboard.speaker;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.actions.speaker.Volumable;
-import org.rch.jarvisapp.bot.actions.speaker.command.SetVolumeTTS;
 import org.rch.jarvisapp.bot.actions.speaker.player.SetProgress;
 import org.rch.jarvisapp.bot.actions.speaker.player.SetVolume;
 import org.rch.jarvisapp.bot.actions.speaker.player.SimplePlayerCommand;
@@ -12,18 +11,15 @@ import org.rch.jarvisapp.bot.dataobject.SpeakerStatusData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
+import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
-import org.rch.jarvisapp.bot.ui.button.LightButton;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
-import org.rch.jarvisapp.bot.ui.yandexStation.CachedTracks;
-import org.rch.jarvisapp.bot.ui.yandexStation.Track;
-import org.rch.jarvisapp.bot.ui.yandexStation.TrackBuilder;
+import org.rch.jarvisapp.bot.ui.yandexStation.*;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
 import java.util.*;
-
 
 public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInputSupportable, Volumable {
     Api api = AppContextHolder.getApi();
@@ -46,6 +42,18 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
     Integer curSeekLevel;
     Track curTrack;
 
+    TrackProgressSeeker seeker = new TrackProgressSeeker(this);
+
+    public Tile getTile() {
+        return tile;
+    }
+
+    public void setTile(Tile tile) {
+        this.tile = tile;
+    }
+
+    private Tile tile;
+
     private final String LIKE_SYMBOL        = "\uD83D\uDC4D";
     private final String DISLIKE_SYMBOL     = "\uD83D\uDC4E";
 
@@ -61,24 +69,17 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
     private final String defaultCover = "https://avatars.mds.yandex.net/i?id=7b449cdc58fa7f0586a744fc9ddf9173-5190189-images-thumbs&n=13";
     private String coverSize = "300";
 
-    {
-        progressBarScale.put(0,0);
-        progressBarScale.put(1,13);
-        progressBarScale.put(2,26);
-        progressBarScale.put(3,39);
-        progressBarScale.put(4,52);
-        progressBarScale.put(5,65);
-        progressBarScale.put(6,78);
-        progressBarScale.put(7,91);
+    public final int[] progressBarScaleVariants = {0,13,26,39,52,65,78,91};
+    public final int[] volumeLineScaleVariants = {0,10,30,40,60,70,90,100};
 
-        volumeLineScale.put(0,0);
-        volumeLineScale.put(1,10);
-        volumeLineScale.put(2,30);
-        volumeLineScale.put(3,40);
-        volumeLineScale.put(4,60);
-        volumeLineScale.put(5,70);
-        volumeLineScale.put(6,90);
-        volumeLineScale.put(7,100);
+    {
+        int i=0;
+        for (int pbVariant : progressBarScaleVariants)
+            progressBarScale.put(i++, pbVariant);
+
+        i=0;
+        for (int volVariant : volumeLineScaleVariants)
+            volumeLineScale.put(i++, volVariant);
     }
 
     public PlayerKeyboard(Speaker speaker) {
@@ -115,7 +116,9 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
         addButton(i, new Button(DISLIKE_SYMBOL, CommonCallBack.empty.name()));
     }
 
-
+    public void deletePlayer(){
+        seeker.interrupt();
+    }
 
     public Integer getPercentVolumeLevel(Integer volume){
         //todo def value 20
@@ -135,9 +138,9 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
         if (curTrack != null) {
             Integer percent = Math.round(progress.floatValue() / curTrack.getDuration() * 100);
             for (Map.Entry<Integer,Integer> entry : progressBarScale.entrySet()){
-                result = entry.getKey();
-                if (entry.getValue() >= percent)
+                if (entry.getValue() > percent)
                     break;
+                result = entry.getKey();
             }
         }
         setProgress(result);
@@ -174,12 +177,18 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
 
         setProgressBarPosition(se.trackProgress);
         setVolumeLinePosition(se.volume);
+
+        seeker.setTrackLength(se.trackDuration);
+        if (StationState.PLAYING.name().equals(se.state))
+            seeker.startTrack(se.trackProgress);
+        else
+            seeker.stopTrack();
+
     }
 
     @Override
     public void setVolume(Integer volume){
         curVolumeLevel = volume;
-        //action.setVolume(getPercentVolumeLevel(curVolumeLevel).toString());
 
         for (int i = 0; i < this.volume.size(); i++)
             this.volume.get(i).setCaption(String.valueOf(volumeLine[i]));
@@ -189,7 +198,6 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
 
     public void setProgress(Integer progress){
         curSeekLevel = progress;
-        //action.setVolume(getPercentVolumeLevel(curVolumeLevel).toString());
 
         for (int i = 0; i < progressBar.size(); i++)
             this.progressBar.get(i).setCaption(String.valueOf(progressBarLine[i]));
