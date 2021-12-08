@@ -4,11 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.rch.jarvisapp.smarthome.devices.Device;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class SpeakerStatusData extends DataObject{
 
     public static class SpeakerElement extends DTOElement {
@@ -41,14 +36,12 @@ public class SpeakerStatusData extends DataObject{
 
     public SpeakerStatusData() {}
 
-
     public SpeakerElement getDevice(Device device){
         DTOElement element = getDeviceDTOElement(device);
         if (element != null)
             return (SpeakerElement) element;
 
         return null;//todo
-
     }
 
     public int getDeviceCount(){

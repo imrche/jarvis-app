@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
+import org.rch.jarvisapp.bot.ui.keyboard.speaker.ProgressLine;
 import org.rch.jarvisapp.bot.ui.yandexStation.Track;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
@@ -24,7 +25,7 @@ public class SetProgress extends SimplePlayerCommand {
                 Track track = pkb.getCurTrack();
                 pkb.setProgress(progress);
                 if (track != null) {
-                    int newPosition = Math.round(track.getDuration() * pkb.getPercentProgressLevel(progress).floatValue()/100);
+                    int newPosition = Math.round(track.getDuration() * ProgressLine.getProgressLevel(progress).floatValue()/100);
                     data.addCommand(speaker, command, Integer.toString(newPosition));
                 }
                 super.run(tile);

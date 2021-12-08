@@ -17,9 +17,7 @@ public class SpeakerData extends DataObject{
 
         public List<Map<String,String>> data = new ArrayList<>();
 
-
-        public SpeakerElement() {
-        }
+        public SpeakerElement() {}
 
         public SpeakerElement(Integer id) {
             super(id);
@@ -40,7 +38,9 @@ public class SpeakerData extends DataObject{
         prev,
         forward,
         backward,
-        rewind
+        rewind,
+        like,
+        dislike
     }
 
     public SpeakerData(String json, Class<?> clazz) throws JsonProcessingException {
@@ -51,8 +51,7 @@ public class SpeakerData extends DataObject{
         super(json, SpeakerElement.class);
     }
 
-    public SpeakerData() {
-    }
+    public SpeakerData() {}
 
     public SpeakerData addSpeaker(Device device, String typeCommand){
         SpeakerElement e = (SpeakerElement) addDevice(device, SpeakerElement.class);

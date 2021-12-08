@@ -5,8 +5,6 @@ import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.dataobject.SpeakerData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
-import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
-import org.rch.jarvisapp.bot.ui.keyboard.speaker.TTSKeyboard;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
 
@@ -28,10 +26,6 @@ public class SimplePlayerCommand implements Action {
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
         api.sendSpeakerCommand(data);
-
-
-
-
     }
 
     @Override

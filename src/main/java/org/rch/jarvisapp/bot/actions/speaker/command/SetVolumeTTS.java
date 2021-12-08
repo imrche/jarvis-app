@@ -5,7 +5,6 @@ import org.rch.jarvisapp.bot.actions.speaker.Volumable;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
-import org.rch.jarvisapp.bot.ui.keyboard.speaker.TTSKeyboard;
 
 public class SetVolumeTTS implements Action {
     private final Integer volume;
@@ -24,7 +23,6 @@ public class SetVolumeTTS implements Action {
 
     @Override
     public int hashCode() {
-        //todo тут могут быть только final
         return (volume.hashCode() + this.getClass().hashCode());
     }
 }

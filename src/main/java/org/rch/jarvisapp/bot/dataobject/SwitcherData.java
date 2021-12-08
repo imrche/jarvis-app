@@ -13,8 +13,7 @@ public class SwitcherData extends DataObject{
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Boolean value;
 
-        public SwitcherElement() {
-        }
+        public SwitcherElement() {}
 
         public SwitcherElement(Integer id) {
             super(id);
@@ -83,7 +82,6 @@ public class SwitcherData extends DataObject{
             return (SwitcherElement) element;
 
         return addSwitcher(device);
-
     }
 
     public int getDeviceCount(){

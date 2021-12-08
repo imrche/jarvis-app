@@ -43,6 +43,8 @@ public class Api {
     final String SCENARIO_RUN = "/scenario";
     final String SPEAKER_COMMAND = "/speaker/command";
     final String SPEAKER_STATUS = "/speaker/status";
+    final String SPEAKER_SETTINGS_GET = "/speaker/settings/get";
+    final String SPEAKER_SETTINGS_SET = "/speaker/settings/set";
 
     private String getURL() {
         return proto + "://" + ip + ":" + port;
@@ -91,6 +93,19 @@ public class Api {
         } catch (JsonProcessingException e) {
             throw new HomeApiWrongResponseData("Статус колонок - ответ " + response, e);
         }
+    }
+
+    public SpeakerSettings getSpeakerSettings(SpeakerSettings req) throws HomeApiWrongResponseData {
+        String response = NetUtil.sendPOST(getURL() + SPEAKER_SETTINGS_GET, req.getData()).get(NetUtil.RESPONSE);
+        try {
+            return new SpeakerSettings(response);
+        } catch (JsonProcessingException e) {
+            throw new HomeApiWrongResponseData("Настройки колонок - ответ " + response, e);
+        }
+    }
+
+    public void setSpeakerSettings(SpeakerSettings req) {
+        NetUtil.sendPOST(getURL() + SPEAKER_SETTINGS_SET, req.getData());
     }
 
     public SwitcherData getStatusLight(SwitcherData req) throws HomeApiWrongResponseData {

@@ -47,10 +47,8 @@ public class TilePlayer extends Tile {
         return this;
     }
 
-
     private InlineKeyboardMarkup getUnionKeyBoard() throws HomeApiWrongResponseData {
         InlineKeyboardMarkup kb = new InlineKeyboardMarkup();
-
         List<List<InlineKeyboardButton>> mList = new ArrayList<>();
 
         for (KeyBoard keyBoard : content) {
@@ -65,9 +63,7 @@ public class TilePlayer extends Tile {
                     mList.add(list);
             }
         }
-
         mList.add(new ArrayList<>(Collections.singletonList(close.getInlineButton())));
-
         kb.setKeyboard(mList);
 
         return kb;

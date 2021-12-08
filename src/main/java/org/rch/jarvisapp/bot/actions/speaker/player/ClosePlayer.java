@@ -7,12 +7,10 @@ import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.TilePool;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
-import org.rch.jarvisapp.smarthome.api.Api;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class ClosePlayer implements Action {
-    private final Api api = AppContextHolder.getApi();
     private final TilePool tilePool = AppContextHolder.getTilePool();
     DeleteMessage deleteMessage = new DeleteMessage();
     Integer messageId;

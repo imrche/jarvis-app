@@ -2,47 +2,78 @@ package org.rch.jarvisapp.bot.ui.keyboard.speaker;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.TextInputSupportable;
+import org.rch.jarvisapp.bot.actions.speaker.ShowMessage;
 import org.rch.jarvisapp.bot.actions.speaker.Volumable;
 import org.rch.jarvisapp.bot.actions.speaker.player.SetProgress;
 import org.rch.jarvisapp.bot.actions.speaker.player.SetVolume;
 import org.rch.jarvisapp.bot.actions.speaker.player.SimplePlayerCommand;
 import org.rch.jarvisapp.bot.dataobject.SpeakerData;
+import org.rch.jarvisapp.bot.dataobject.SpeakerSettings;
 import org.rch.jarvisapp.bot.dataobject.SpeakerStatusData;
-import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
+import org.rch.jarvisapp.bot.ui.button.func_interface.SimpleTextActionRunner;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.yandexStation.*;
-import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Speaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.rch.jarvisapp.bot.dataobject.SpeakerSettings.Settings.*;
 
 import java.util.*;
 
 public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInputSupportable, Volumable {
-    Api api = AppContextHolder.getApi();
-    TrackBuilder trackBuilder = AppContextHolder.getContext().getBean(TrackBuilder.class);
-    SpeakerData speakerData = new SpeakerData();
-    private Speaker speaker;
+    private final Logger logger = LoggerFactory.getLogger(PlayerKeyboard.class);
 
-    private Button info = new Button(" ", CommonCallBack.empty.name());
+    private Tile tile;
+    private final SpeakerData speakerData = new SpeakerData();
+    private final Speaker speaker;
+    private final Button info = new Button(" ", new ShowMessage(s -> getInfo()));
 
-    private List<Button> progressBar = new ArrayList<>();
-    private List<Button> volume = new ArrayList<>();
+    private final VolumeLine volumeLineNew;
+    private final ProgressLine progressLineNew;
 
-    final char[] progressBarLine = "PROGRESS".toCharArray();
-    final char[] volumeLine = "-VOLUME+".toCharArray();
+    private final TrackProgressSeeker seeker = new TrackProgressSeeker(this);
+    private Track curTrack;
+    private final String defaultCover = "https://avatars.mds.yandex.net/i?id=7b449cdc58fa7f0586a744fc9ddf9173-5190189-images-thumbs&n=13";
+    private final Integer curCoverSize;
 
-    Map<Integer,Integer> volumeLineScale = new TreeMap<>();
-    Map<Integer,Integer> progressBarScale = new TreeMap<>();
+    public PlayerKeyboard(Speaker speaker) {
+        this.speaker = speaker;
+        speakerData.addSpeaker(speaker);
 
-    Integer curVolumeLevel;
-    Integer curSeekLevel;
-    Track curTrack;
+        volumeLineNew = new VolumeLine(i -> new SetVolume(speaker, i));
+        progressLineNew = new ProgressLine(i -> new SetProgress(speaker, i));
 
-    TrackProgressSeeker seeker = new TrackProgressSeeker(this);
+        int i = 1;
+        addButton(i, info);
+
+        i++;
+        for (Button btn : progressLineNew.getProgressButton())
+            addButton(i, btn);
+
+        i++;
+        addButton(i, new Button(PlayerSymbols.PREV_TRACK.toString(),  new SimplePlayerCommand(speaker, SpeakerData.Command.prev)));
+        addButton(i, new Button(PlayerSymbols.BACKWARD.toString(),    new SimplePlayerCommand(speaker, SpeakerData.Command.backward)));
+        addButton(i, new Button(PlayerSymbols.STOP.toString(),        new SimplePlayerCommand(speaker, SpeakerData.Command.stop)));
+        addButton(i, new Button(PlayerSymbols.PLAY.toString(),        new SimplePlayerCommand(speaker, SpeakerData.Command.play)));
+        addButton(i, new Button(PlayerSymbols.FORWARD.toString(),     new SimplePlayerCommand(speaker, SpeakerData.Command.forward)));
+        addButton(i, new Button(PlayerSymbols.NEXT_TRACK.toString(),  new SimplePlayerCommand(speaker, SpeakerData.Command.next)));
+
+        i++;
+        for (Button btn : volumeLineNew.getVolumeButton())
+            addButton(i, btn);
+
+        i++;
+        addButton(i, new Button(PlayerSymbols.LIKE.toString(),    new SimplePlayerCommand(speaker, SpeakerData.Command.like)));
+        addButton(i, new Button(PlayerSymbols.DISLIKE.toString(), new SimplePlayerCommand(speaker, SpeakerData.Command.dislike)));
+
+        curCoverSize = getCoverSize();
+    }
 
     public Tile getTile() {
         return tile;
@@ -52,157 +83,70 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
         this.tile = tile;
     }
 
-    private Tile tile;
-
-    private final String LIKE_SYMBOL        = "\uD83D\uDC4D";
-    private final String DISLIKE_SYMBOL     = "\uD83D\uDC4E";
-
-    private final String PREV_TRACK_SYMBOL  = "⏮";
-    private final String BACKWARD_SYMBOL    = "⏪";
-    private final String STOP_SYMBOL        = "⏹";
-    private final String PLAY_SYMBOL        = "⏯";
-    private final String FORWARD_SYMBOL     = "⏩";
-    private final String NEXT_TRACK_SYMBOL  = "⏭";
-
-    private final String HANDLE_SYMBOL      = "\uD83D\uDD38";
-
-    private final String defaultCover = "https://avatars.mds.yandex.net/i?id=7b449cdc58fa7f0586a744fc9ddf9173-5190189-images-thumbs&n=13";
-    private String coverSize = "300";
-
-    public final int[] progressBarScaleVariants = {0,13,26,39,52,65,78,91};
-    public final int[] volumeLineScaleVariants = {0,10,30,40,60,70,90,100};
-
-    {
-        int i=0;
-        for (int pbVariant : progressBarScaleVariants)
-            progressBarScale.put(i++, pbVariant);
-
-        i=0;
-        for (int volVariant : volumeLineScaleVariants)
-            volumeLineScale.put(i++, volVariant);
-    }
-
-    public PlayerKeyboard(Speaker speaker) {
-        this.speaker = speaker;
-        speakerData.addSpeaker(speaker);
-
-        for (int j = 0; j < progressBarLine.length; j++)
-            progressBar.add(new Button(String.valueOf(progressBarLine[j]), new SetProgress(speaker, j)));
-
-        for (int j = 0; j < volumeLine.length; j++)
-            volume.add(new Button(String.valueOf(volumeLine[j]), new SetVolume(speaker, j)));
-
-        int i = 1;
-        addButton(i, info);
-
-        i++;
-        for (Button btn : progressBar)
-            addButton(i, btn);
-
-        i++;
-        addButton(i, new Button(PREV_TRACK_SYMBOL,  new SimplePlayerCommand(speaker, SpeakerData.Command.prev)));
-        addButton(i, new Button(BACKWARD_SYMBOL,    new SimplePlayerCommand(speaker, SpeakerData.Command.backward)));
-        addButton(i, new Button(STOP_SYMBOL,        new SimplePlayerCommand(speaker, SpeakerData.Command.stop)));
-        addButton(i, new Button(PLAY_SYMBOL,        new SimplePlayerCommand(speaker, SpeakerData.Command.play)));
-        addButton(i, new Button(FORWARD_SYMBOL,     new SimplePlayerCommand(speaker, SpeakerData.Command.forward)));
-        addButton(i, new Button(NEXT_TRACK_SYMBOL,  new SimplePlayerCommand(speaker, SpeakerData.Command.next)));
-
-        i++;
-        for (Button btn : volume)
-            addButton(i, btn);
-
-        i++;
-        addButton(i, new Button(LIKE_SYMBOL,    CommonCallBack.empty.name()));
-        addButton(i, new Button(DISLIKE_SYMBOL, CommonCallBack.empty.name()));
-    }
-
     public void deletePlayer(){
         seeker.interrupt();
-    }
-
-    public Integer getPercentVolumeLevel(Integer volume){
-        //todo def value 20
-        return volumeLineScale.get(volume);
-    }
-
-    public Integer getPercentProgressLevel(Integer level){
-        return progressBarScale.get(level);
     }
 
     public Track getCurTrack() {
         return curTrack;
     }
 
-    private void setProgressBarPosition(Integer progress){
-        Integer result = -1;
-        if (curTrack != null) {
-            Integer percent = Math.round(progress.floatValue() / curTrack.getDuration() * 100);
-            for (Map.Entry<Integer,Integer> entry : progressBarScale.entrySet()){
-                if (entry.getValue() > percent)
-                    break;
-                result = entry.getKey();
-            }
-        }
-        setProgress(result);
-    }
-
-    private void setVolumeLinePosition(Integer volume){
-        Integer result = -1;
-
-        for (Map.Entry<Integer,Integer> entry : volumeLineScale.entrySet()){
-            result = entry.getKey();
-            if (entry.getValue() >= volume)
-                break;
-        }
-
-        setVolume(result);
-    }
-
     public String getCoverURL(){
-        return curTrack != null ? curTrack.getCoverURL() + getCoverSize() : defaultCover;
+        return curTrack != null ? curTrack.getCoverURL(curCoverSize) : defaultCover;
     }
 
-    private String getCoverSize(){
-        return coverSize + "x" + coverSize;
+    private Integer getCoverSize(){
+        SpeakerSettings patternSettings = new SpeakerSettings();
+        patternSettings.addSpeaker(speaker);
+
+        try {
+            SpeakerSettings ss;
+            ss = AppContextHolder.getApi().getSpeakerSettings(patternSettings);
+            Object coverSizeResponse = ss.getSettings(speaker).get(coverSize);
+            if (!(coverSizeResponse instanceof Number))
+                throw new HomeApiWrongResponseData("Не получено/некорректное значение параметра " + coverSize.name());
+
+            return (Integer)coverSizeResponse;
+        } catch (HomeApiWrongResponseData e) {
+            logger.error("Не удалось получить дефолтное значение размера обложки",e);
+            return 300;
+        }
+    }
+
+    private String getInfo(){
+        return
+                "\uD83C\uDFB9" + curTrack.getArtist() + " - " + curTrack.getTitle()  + "(" + curTrack.getDurationFormatted() + ")" + "\n" +
+                "\uD83D\uDCBF" + curTrack.getAlbum() + "[" + curTrack.getYear() + "]" + "\n" +
+                "\uD83C\uDFB6" + curTrack.getGenre() + "\n" +
+                "❤ " + curTrack.getAlbumLikesCount();
     }
 
     @Override
     public void refresh() throws HomeApiWrongResponseData {
-        SpeakerStatusData ssd = api.getSpeakerStatus(speakerData);
+        SpeakerStatusData ssd = AppContextHolder.getApi().getSpeakerStatus(speakerData);
         SpeakerStatusData.SpeakerElement se =  ssd.getDevice(speaker);
 
-        curTrack = trackBuilder.build(se);
+        curTrack = AppContextHolder.getTrackBuilder().build(se);
 
-        info.setCaption(curTrack.getArtist() + " - " +  curTrack.getTitle() + "(" + curTrack.getDuration() + ")");
+        info.setCaption(curTrack.getDescription());
 
-        setProgressBarPosition(se.trackProgress);
-        setVolumeLinePosition(se.volume);
+        progressLineNew.setProgressWithLevel(se.trackProgress, curTrack != null ? curTrack.getDuration() : 0);
+        volumeLineNew.setVolumeWithLevel(se.volume);
 
         seeker.setTrackLength(se.trackDuration);
         if (StationState.PLAYING.name().equals(se.state))
             seeker.startTrack(se.trackProgress);
         else
             seeker.stopTrack();
-
     }
 
     @Override
     public void setVolume(Integer volume){
-        curVolumeLevel = volume;
-
-        for (int i = 0; i < this.volume.size(); i++)
-            this.volume.get(i).setCaption(String.valueOf(volumeLine[i]));
-
-        this.volume.get(curVolumeLevel).setCaption(HANDLE_SYMBOL);
+        volumeLineNew.setVolume(volume);
     }
 
     public void setProgress(Integer progress){
-        curSeekLevel = progress;
-
-        for (int i = 0; i < progressBar.size(); i++)
-            this.progressBar.get(i).setCaption(String.valueOf(progressBarLine[i]));
-
-        this.progressBar.get(curSeekLevel).setCaption(HANDLE_SYMBOL);
+        progressLineNew.setProgress(progress);
     }
 
     @Override

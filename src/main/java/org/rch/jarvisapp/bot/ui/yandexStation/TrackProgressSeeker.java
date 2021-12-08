@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.ui.yandexStation;
 
 import lombok.SneakyThrows;
 import org.rch.jarvisapp.bot.ui.keyboard.speaker.PlayerKeyboard;
+import org.rch.jarvisapp.bot.ui.keyboard.speaker.ProgressLine;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -9,7 +10,6 @@ import java.util.TreeMap;
 public class TrackProgressSeeker extends Thread{
     PlayerKeyboard kb;
     private Integer trackLength = 0;
-    private Integer curPosition = 0;
     int curSwitchPosition = 0;
     int secIsLeft = 0;
 
@@ -23,8 +23,8 @@ public class TrackProgressSeeker extends Thread{
         if (!this.trackLength.equals(trackLength)) {
             this.trackLength = trackLength;
             switchMap.clear();
-            for (int i = 0; i < kb.volumeLineScaleVariants.length; i++)
-                switchMap.put(i,trackLength * kb.volumeLineScaleVariants[i] / 100);
+            for (int i = 0; i < ProgressLine.progressScale.length; i++)
+                switchMap.put(i,trackLength * ProgressLine.progressScale[i] / 100);
         }
     }
 
@@ -37,11 +37,10 @@ public class TrackProgressSeeker extends Thread{
         if (State.NEW == getState())
             start();
         //System.out.println(this.getState().name());
-        curPosition = position;
         for (Map.Entry<Integer, Integer> entry : switchMap.entrySet()) {
-            if (entry.getValue() > curPosition){
+            if (entry.getValue() > position){
                 curSwitchPosition = entry.getKey();
-                secIsLeft = entry.getValue() - curPosition;
+                secIsLeft = entry.getValue() - position;
                 //System.out.println("start with params: curSwitchPosition - " + curSwitchPosition + " secIsLeft - " + secIsLeft);
                 break;
             }

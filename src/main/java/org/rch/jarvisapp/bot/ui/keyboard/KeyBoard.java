@@ -6,10 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
+import org.rch.jarvisapp.bot.ui.button.func_interface.GroupCaptionUpdater;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -18,13 +17,24 @@ import java.util.stream.Collectors;
 public class KeyBoard{
     List<List<Button>> buttons = new ArrayList<>();
 
+    Map<String,Button> categorizedMap = new HashMap<>();
+    GroupCaptionUpdater updater;
+
     public KeyBoard(){}
+
+    public void setUpdater(GroupCaptionUpdater updater) {
+        this.updater = updater;
+    }
 
     public List<List<Button>> getInlineButtons(){
         return buttons;
     }
 
     public KeyBoard addButton(int rowNum, Button button){
+        return addButton(rowNum, null, button);
+    }
+
+    public KeyBoard addButton(int rowNum,String code, Button button){
         List<Button> row;
         boolean found = true;
 
@@ -42,6 +52,9 @@ public class KeyBoard{
         if(!found)
             buttons.add(row);
 
+        if (code != null)
+            categorizedMap.put(code,button);//todo можно потом использовать в переборах
+
         return this;
     }
 
@@ -55,8 +68,19 @@ public class KeyBoard{
                 .collect(Collectors.toList());
     }
 
+    private void groupCaptionUpdate(){
+        Map<String,String> data = updater.getCaption();
+        for (Map.Entry<String,String> entry : data.entrySet()){
+            if (categorizedMap.containsKey(entry.getKey()))
+                categorizedMap.get(entry.getKey()).setCaption(entry.getValue());
+        }
+    }
+
     public void refresh() throws HomeApiWrongResponseData {
-        for (Button button : getButtonsList())
-            button.refresh();
+        if (updater != null)
+            groupCaptionUpdate();
+        else
+            for (Button button : getButtonsList())
+                button.refresh();
     }
 }

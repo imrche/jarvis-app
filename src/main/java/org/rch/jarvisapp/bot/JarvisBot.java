@@ -9,31 +9,16 @@ import org.rch.jarvisapp.bot.enums.Stickers;
 import org.rch.jarvisapp.bot.exceptions.BotException;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.*;
-import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
-import org.rch.jarvisapp.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.methods.send.SendVideo;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class JarvisBot extends TelegramWebhookBot {
@@ -43,12 +28,6 @@ public class JarvisBot extends TelegramWebhookBot {
     BotConfig botConfig;
     ActionCache actionCache;
     TilePool tilePool;
-
-
-
-
-    Message message1;
-
     String lastCallBackId = "";
 
     public JarvisBot(BotConfig botConfig, ActionCache actionCache, TilePool tilePool){
@@ -82,45 +61,7 @@ public class JarvisBot extends TelegramWebhookBot {
                     messageBuilder.popupAsync("Успешно отправлено");
                     return messageBuilder.emptyAnswer();
                 } else {
-
-                    KeyBoard kb2 = new KeyBoard();
-                    Button btn2 = new Button();
-                    btn2.setCaption("hi");
-                    btn2.setCallBack("empty");
-                    kb2.addButton(1,btn2);
-
-                    InlineKeyboardMarkup kb = new InlineKeyboardMarkup();
-                    List<List<InlineKeyboardButton>> mList = new ArrayList<>();
-                    for (List<Button> lBtn : kb2.getInlineButtons()){
-                        List<InlineKeyboardButton> list = new ArrayList<>();
-                        for (Button btn : lBtn) list.add(btn.getInlineButton());
-                        if (list.size() > 0) mList.add(list);
-                    }
-                    kb.setKeyboard(mList);
-
-                    if (message.getText().equals("1"))
-                       message1  = execute(new SendPhoto().setChatId(getChat()).setCaption("mess").setReplyMarkup(kb).setPhoto("http://avatars.yandex.net/get-music-content/63210/96272f0b.a.626134-4/300x300"));
-                    else if (message.getText().equals("2")){
-                        InputMediaPhoto media = new InputMediaPhoto();
-                        media.setMedia("http://avatars.yandex.net/get-music-content/63210/96272f0b.a.626134-4/600x600");
-                        EditMessageMedia messageMed = new EditMessageMedia()
-                                .setMessageId(message1.getMessageId())
-
-                                //.se(text)
-                                //  .setParseMode(parseMode != null ? parseMode.name() : null)
-                                .setChatId(getChat())
-                                .setReplyMarkup(kb);
-                        messageMed.setMedia(media);
-                        execute(messageMed);
-                    }
-                    else if (message.getText().equals("3")){
-                        DeleteMessage delNess = new DeleteMessage().setMessageId(message1.getMessageId()).setChatId(getChat());
-                        execute(delNess);
-
-                    }
-
-
-                    //return messageBuilder.sendStickerAsync(Stickers.what);
+                    return messageBuilder.sendStickerAsync(Stickers.what);
                 }
             }
 
@@ -150,8 +91,7 @@ public class JarvisBot extends TelegramWebhookBot {
                             .publish();
 
                     return messageBuilder.emptyAnswer();
-                } catch (IllegalArgumentException ignored) {
-                }
+                } catch (IllegalArgumentException ignored) {}
 
                 //основные действия через callback (кэшированный)
                 Action actionData = actionCache.getCallBack(callBackData);
@@ -160,7 +100,6 @@ public class JarvisBot extends TelegramWebhookBot {
                     throw new BotException("CallBack " + update.getCallbackQuery().getData() + " не существует");
 
                 //запустить действие
-                //actionData.getAction().run(tile, actionData);
                 actionData.run(tile);
                 tile.publish();
 
@@ -173,11 +112,12 @@ public class JarvisBot extends TelegramWebhookBot {
             else
                 return messageBuilder.popup(botException.getMessage());
         } catch (Exception e) {
-            logger.error("Что-то пошло не так ",e);
+            String msg = "Что-то пошло не так ";
+            logger.error(msg, e);
             if (update.hasMessage())
-                return messageBuilder.send("Что-то пошло не так " + e.toString());
+                return messageBuilder.send(msg + e.toString());
             else
-                return messageBuilder.popup("Что-то пошло не так " + e.toString());
+                return messageBuilder.popup(msg + e.toString());
         }
 
         return messageBuilder.emptyAnswer();
@@ -204,9 +144,5 @@ public class JarvisBot extends TelegramWebhookBot {
 
     public String getLastCallBackId() {
         return lastCallBackId;
-    }
-
-    public MessageBuilder getMessageBuilder(){
-        return messageBuilder;
     }
 }

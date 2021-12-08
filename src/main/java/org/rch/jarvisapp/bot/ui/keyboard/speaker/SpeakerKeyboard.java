@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.ui.keyboard.speaker;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.speaker.ShowSpeakerPlayer;
+import org.rch.jarvisapp.bot.actions.speaker.player.settings.ShowSpeakerSettings;
 import org.rch.jarvisapp.bot.actions.speaker.ShowSpeakerTTS;
 import org.rch.jarvisapp.bot.dataobject.SpeakerData;
 import org.rch.jarvisapp.bot.dataobject.SpeakerStatusData;
@@ -19,7 +20,6 @@ import org.rch.jarvisapp.smarthome.devices.Speaker;
 
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class SpeakerKeyboard extends KeyBoard implements DeviceContainer {
     private final Api api = AppContextHolder.getApi();
@@ -41,7 +41,7 @@ public class SpeakerKeyboard extends KeyBoard implements DeviceContainer {
         addButton(1, info);
         addButton(2, new Button(TTS_SYMBOL      + "[SAY]",      new ShowSpeakerTTS(speaker)));
         addButton(2, new Button(PLAYER_SYMBOL   + "[PLAYER]",   new ShowSpeakerPlayer(speaker)));
-        addButton(2, new Button(SETTINGS_SYMBOL + "[SETTINGS]", CommonCallBack.empty.name()));
+        addButton(2, new Button(SETTINGS_SYMBOL + "[SETTINGS]", new ShowSpeakerSettings(speaker)));
     }
 
     @Override
@@ -55,9 +55,7 @@ public class SpeakerKeyboard extends KeyBoard implements DeviceContainer {
             trackInfo = track.getArtist() + " - " + track.getTitle();
         }
 
-
         info.setCaption(StationState.getStateSymbol(se.state) + trackInfo);
-
     }
 
     @Override
