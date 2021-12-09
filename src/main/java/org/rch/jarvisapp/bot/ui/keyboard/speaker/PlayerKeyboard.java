@@ -113,7 +113,7 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
     }
 
     private String getInfo(){
-        return  "INFO" + "\n" +
+        return  "[INFO]" + "\n" +
                 "\uD83D\uDC64   " + curTrack.getArtist() + "\n\n" +
                 "\uD83C\uDFB9   " + curTrack.getTitle()  + " (" + curTrack.getDurationFormatted() + ")" + "\n\n" +
                 "\uD83D\uDCBF   " + curTrack.getAlbum() + " [" + curTrack.getYear() + "]" + "\n\n" +
