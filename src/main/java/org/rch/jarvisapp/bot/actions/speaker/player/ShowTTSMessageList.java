@@ -8,17 +8,14 @@ import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.func_interface.MessageListGetter;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
-import org.rch.jarvisapp.smarthome.devices.Speaker;
 
 public class ShowTTSMessageList implements Action {
-    private final Speaker speaker;
     private final MessageListGetter messageListGetter;
     SpeakerTTS action;
 
-    public ShowTTSMessageList(Speaker speaker, MessageListGetter getter) {
+    public ShowTTSMessageList(SpeakerTTS action, MessageListGetter getter) {
         messageListGetter = getter;
-        this.speaker = speaker;
-        action = new SpeakerTTS(speaker);
+        this.action = action;
     }
 
     @Override
@@ -38,6 +35,6 @@ public class ShowTTSMessageList implements Action {
 
     @Override
     public int hashCode() {
-        return (messageListGetter.hashCode() + speaker.hashCode()+ this.getClass().hashCode());
+        return (messageListGetter.hashCode() + action.hashCode()+ this.getClass().hashCode());
     }
 }

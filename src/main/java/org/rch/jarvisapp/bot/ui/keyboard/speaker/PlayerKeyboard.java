@@ -14,7 +14,6 @@ import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
-import org.rch.jarvisapp.bot.ui.button.func_interface.SimpleTextActionRunner;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.yandexStation.*;
 import org.rch.jarvisapp.smarthome.devices.Device;
@@ -114,11 +113,12 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
     }
 
     private String getInfo(){
-        return
-                "\uD83C\uDFB9" + curTrack.getArtist() + " - " + curTrack.getTitle()  + "(" + curTrack.getDurationFormatted() + ")" + "\n" +
-                "\uD83D\uDCBF" + curTrack.getAlbum() + "[" + curTrack.getYear() + "]" + "\n" +
-                "\uD83C\uDFB6" + curTrack.getGenre() + "\n" +
-                "❤ " + curTrack.getAlbumLikesCount();
+        return  "INFO" + "\n" +
+                "\uD83D\uDC64   " + curTrack.getArtist() + "\n\n" +
+                "\uD83C\uDFB9   " + curTrack.getTitle()  + " (" + curTrack.getDurationFormatted() + ")" + "\n\n" +
+                "\uD83D\uDCBF   " + curTrack.getAlbum() + " [" + curTrack.getYear() + "]" + "\n\n" +
+                "\uD83C\uDFB6   " + curTrack.getGenre() + "\n\n" +
+                "❤  "            + curTrack.getAlbumLikesCount();
     }
 
     @Override

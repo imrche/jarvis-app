@@ -46,7 +46,8 @@ public class Track {
     }
 
     public String getDurationFormatted(){
-        return duration / 60 + ":" + duration%60;
+
+        return duration / 60 + ":" + String.format("%02d",duration%60);
     }
 
     public String getCoverURL(Integer size){

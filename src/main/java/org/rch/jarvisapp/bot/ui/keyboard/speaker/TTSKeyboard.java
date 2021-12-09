@@ -25,8 +25,8 @@ public class TTSKeyboard extends KeyBoard implements TextInputSupportable, Volum
     public TTSKeyboard(Speaker speaker) {
         action = new SpeakerTTS(speaker);
         int i = 1;
-        addButton(i++, new Button("Шаблоны", new ShowTTSMessageList(speaker, () -> getMessageLists(patternMessage))));
-        addButton(i++, new Button("Недавнее", new ShowTTSMessageList(speaker, () -> getMessageLists(recentMessage))));
+        addButton(i++, new Button("Шаблоны", new ShowTTSMessageList(action, () -> getMessageLists(patternMessage))));
+        addButton(i++, new Button("Недавнее", new ShowTTSMessageList(action, () -> getMessageLists(recentMessage))));
 
         volumeLineNew = new VolumeLine(SetVolumeTTS::new);
 
