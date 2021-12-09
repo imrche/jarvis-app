@@ -126,18 +126,20 @@ public class PlayerKeyboard extends KeyBoard implements DeviceContainer, TextInp
         SpeakerStatusData ssd = AppContextHolder.getApi().getSpeakerStatus(speakerData);
         SpeakerStatusData.SpeakerElement se =  ssd.getDevice(speaker);
 
-        curTrack = AppContextHolder.getTrackBuilder().build(se);
+        if (se.trackID != null && !se.trackID.isEmpty()) {
+            curTrack = AppContextHolder.getTrackBuilder().build(se);
 
-        info.setCaption(curTrack.getDescription());
+            info.setCaption(curTrack.getDescription());
 
-        progressLineNew.setProgressWithLevel(se.trackProgress, curTrack != null ? curTrack.getDuration() : 0);
-        volumeLineNew.setVolumeWithLevel(se.volume);
+            progressLineNew.setProgressWithLevel(se.trackProgress, curTrack != null ? curTrack.getDuration() : 0);
+            volumeLineNew.setVolumeWithLevel(se.volume);
 
-        seeker.setTrackLength(se.trackDuration);
-        if (StationState.PLAYING.name().equals(se.state))
-            seeker.startTrack(se.trackProgress);
-        else
-            seeker.stopTrack();
+            seeker.setTrackLength(se.trackDuration);
+            if (StationState.PLAYING.name().equals(se.state))
+                seeker.startTrack(se.trackProgress);
+            else
+                seeker.stopTrack();
+        }
     }
 
     @Override
