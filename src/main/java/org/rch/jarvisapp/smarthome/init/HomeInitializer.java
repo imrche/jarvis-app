@@ -39,6 +39,7 @@ public class HomeInitializer {
             case "rangehood": return RangeHood.class;
             case "valve": return Valve.class;
             case "window": return Window.class;
+            case "speaker": return Speaker.class;
             default: throw new UnknownDeviceTypeException("Не распознано - " + type);
         }
     }

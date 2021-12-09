@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.ui;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.MessageBuilder;
+import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
@@ -16,6 +17,7 @@ import java.util.*;
 
 public class Tile{
     Stack<Tile> historyStack = new Stack<>();
+
     Integer messageId;
     String caption;
 
@@ -34,6 +36,10 @@ public class Tile{
 
     public Tile() {}
 
+    public List<KeyBoard> getContent() {
+        return content;
+    }
+
     public Tile refresh() throws HomeApiWrongResponseData {
         //todo сделать приватной, чтобы избежать вызовов ненужных
         if (tileCaptionUpdater != null)
@@ -43,6 +49,18 @@ public class Tile{
             kb.refresh();
 
         return this;
+    }
+
+    public Integer getMessageId() {
+        return messageId;
+    }
+
+    private Boolean isReady2Text(){
+        for (KeyBoard keyBoard : content) {
+            if (keyBoard instanceof TextInputSupportable)
+                return true;//todo ругаться через попап если клав несколько
+        }
+        return false;
     }
 
     private InlineKeyboardMarkup getUnionKeyBoard() throws HomeApiWrongResponseData {
@@ -80,8 +98,9 @@ public class Tile{
         if (messageId == null)
             messageId = getMessageBuilder().sendAsync(caption, getUnionKeyBoard());
         else
-            getMessageBuilder().editAsync(messageId, caption, getUnionKeyBoard(),parseMode);
+            getMessageBuilder().editAsync(messageId, caption, getUnionKeyBoard(), parseMode);
 
+        getTilePool().setTileWithTextInputActivated(isReady2Text() ? this : null);
         getTilePool().setFeedBack(messageId);
     }
 
@@ -148,7 +167,7 @@ public class Tile{
     }
 
     public void popup(String message){
-        getMessageBuilder().popupAsync(messageId.toString(), message);
+        getMessageBuilder().popupAsync(message);
     }
 
     public MessageBuilder getMessageBuilder(){

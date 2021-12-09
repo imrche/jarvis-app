@@ -11,9 +11,13 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.send.SendSticker;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageMedia;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
@@ -33,19 +37,19 @@ public class MessageBuilder {
         return new AnswerCallbackQuery();
     }
 
-    public BotApiMethod<?> popup(String id, String message){
-        return new AnswerCallbackQuery().setShowAlert(true).setText(message).setCallbackQueryId(id);
+    public BotApiMethod<?> popup(String message){
+        return new AnswerCallbackQuery().setShowAlert(true).setText(message).setCallbackQueryId(bot.getLastCallBackId());
     }
 
-    public void popupAsync(String id, String message){
+    public void popupAsync(String message){
         try {
             bot.execute(new AnswerCallbackQuery()
                     .setShowAlert(true)
                     .setText(message)
-                    .setCallbackQueryId(id));
+                    .setCallbackQueryId(bot.getLastCallBackId()));
 
         } catch (TelegramApiException e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage()/*+ " - " + e.getApiResponse()*/,e);
         }
     }
 
@@ -70,6 +74,39 @@ public class MessageBuilder {
         }
     }
 
+    public Integer sendImageAsync(String image, InlineKeyboardMarkup keyBoard){
+        try {
+            Message message = bot.execute(new SendPhoto().setChatId(bot.getChat()).setReplyMarkup(keyBoard).setPhoto(image));
+            return message.getMessageId();
+        } catch (TelegramApiException e) {
+            logger.error(e.getMessage(),e);
+            return -1;
+        }
+    }
+
+    public void editImageAsync(Integer messageId, String image, InlineKeyboardMarkup keyBoard, ParseMode parseMode){
+        InputMediaPhoto media = new InputMediaPhoto();
+        media.setMedia(image);
+        EditMessageMedia message = new EditMessageMedia()
+                .setMessageId(messageId)
+                .setChatId(bot.getChat())
+                .setReplyMarkup(keyBoard);
+        message.setMedia(media);
+
+        logger.trace(Util.toANSI(message.toString()));
+
+        try {
+            bot.execute(message);
+        } catch (TelegramApiRequestException e) {
+            logger.error(e.getApiResponse(), e);
+            if (!e.getApiResponse().contains("message is not modified"))
+                popupAsync(e.getApiResponse());
+        } catch (TelegramApiException e ){
+            logger.error(e.getMessage(), e);
+            popupAsync(e.getMessage());
+        }
+    }
+
     public void editAsync(Integer messageId, String text, InlineKeyboardMarkup keyBoard, ParseMode parseMode){
         EditMessageText message = new EditMessageText()
                                             .setMessageId(messageId)
@@ -84,10 +121,12 @@ public class MessageBuilder {
             bot.execute(message);
         } catch (TelegramApiRequestException e) {
             logger.error(e.getApiResponse(), e);
-            popupAsync(messageId.toString(), e.getApiResponse());
+            if (!e.getApiResponse().contains("message is not modified"))
+                popupAsync(e.getApiResponse());
+            emptyAnswer();
         } catch (TelegramApiException e ){
             logger.error(e.getMessage(), e);
-            popupAsync(messageId.toString(), e.getMessage());
+            popupAsync(e.getMessage());
         }
     }
 

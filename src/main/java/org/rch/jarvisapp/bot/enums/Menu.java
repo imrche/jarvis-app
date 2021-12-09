@@ -10,6 +10,7 @@ import org.rch.jarvisapp.bot.actions.scenario.ShowAllScenarios;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
+import org.rch.jarvisapp.bot.actions.speaker.ShowAllSpeakers;
 import org.rch.jarvisapp.bot.actions.valves.ShowValve;
 import org.rch.jarvisapp.bot.actions.windows.ShowWindowsStatus;
 import org.rch.jarvisapp.smarthome.enums.SensorTypes;
@@ -27,6 +28,8 @@ public enum Menu {
         bathroomWaterSupply (BotCommand.bathroom,1,ShowValve.description, ShowValve.class),
         bathroomHoods       (BotCommand.bathroom,2,"Вытяжки", ShowRangeHood.class),
         bathroomDryer       (BotCommand.bathroom,3,"Сушилки", StubAction.class),
+
+    controlSpeaker          (BotCommand.control,4,"Умные колонки", ShowAllSpeakers.class),
 
     statusPlaceGroup        (BotCommand.status,1, ShowSensorsStatus.description,            ShowSensorsStatus.class, true),
     statusTemperature       (BotCommand.status,2, SensorTypes.temperature.getDescription(), ShowTemperature.class),

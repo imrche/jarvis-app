@@ -1,5 +1,6 @@
 package org.rch.jarvisapp.bot;
 
+import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.cache.ActionCache;
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.enums.BotCommand;
@@ -8,8 +9,8 @@ import org.rch.jarvisapp.bot.enums.Stickers;
 import org.rch.jarvisapp.bot.exceptions.BotException;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.*;
+import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.bot.ui.keyboard.MenuKeyBoard;
-import org.rch.jarvisapp.utils.NetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ public class JarvisBot extends TelegramWebhookBot {
     BotConfig botConfig;
     ActionCache actionCache;
     TilePool tilePool;
-
     String lastCallBackId = "";
 
     public JarvisBot(BotConfig botConfig, ActionCache actionCache, TilePool tilePool){
@@ -52,6 +52,14 @@ public class JarvisBot extends TelegramWebhookBot {
                     } catch (IllegalArgumentException e) {
                         throw new BotException("Неопознанная команда " + message.getText());
                     }
+                } else if (tilePool.getTileWithTextInputActivated() != null) {
+                    Tile tileWith = tilePool.getTileWithTextInputActivated();
+                    for (KeyBoard keyBoard : tileWith.getContent()){
+                        if (keyBoard instanceof TextInputSupportable)
+                            ((TextInputSupportable)keyBoard).ProceedTextInput(message.getText());
+                    }
+                    messageBuilder.popupAsync("Успешно отправлено");
+                    return messageBuilder.emptyAnswer();
                 } else {
                     return messageBuilder.sendStickerAsync(Stickers.what);
                 }
@@ -69,7 +77,7 @@ public class JarvisBot extends TelegramWebhookBot {
 
                 //кнопка EMPTY
                 if (CommonCallBack.empty.is(callBackData))
-                    return messageBuilder.popup(update.getCallbackQuery().getId(), "Пусто");
+                    return messageBuilder.popup("Пусто");
 
                 //кнопка НАЗАД
                 if (CommonCallBack.stepBackTile.is(callBackData)) {
@@ -83,8 +91,7 @@ public class JarvisBot extends TelegramWebhookBot {
                             .publish();
 
                     return messageBuilder.emptyAnswer();
-                } catch (IllegalArgumentException ignored) {
-                }
+                } catch (IllegalArgumentException ignored) {}
 
                 //основные действия через callback (кэшированный)
                 Action actionData = actionCache.getCallBack(callBackData);
@@ -93,7 +100,6 @@ public class JarvisBot extends TelegramWebhookBot {
                     throw new BotException("CallBack " + update.getCallbackQuery().getData() + " не существует");
 
                 //запустить действие
-                //actionData.getAction().run(tile, actionData);
                 actionData.run(tile);
                 tile.publish();
 
@@ -104,13 +110,14 @@ public class JarvisBot extends TelegramWebhookBot {
             if (update.hasMessage())
                 return messageBuilder.send(botException.getMessage());
             else
-                return messageBuilder.popup(update.getCallbackQuery().getId(),botException.getMessage());
+                return messageBuilder.popup(botException.getMessage());
         } catch (Exception e) {
-            logger.error("Что-то пошло не так ",e);
+            String msg = "Что-то пошло не так ";
+            logger.error(msg, e);
             if (update.hasMessage())
-                return messageBuilder.send("Что-то пошло не так " + e.toString());
+                return messageBuilder.send(msg + e.toString());
             else
-                return messageBuilder.popup(update.getCallbackQuery().getId(),"Что-то пошло не так " + e.toString());
+                return messageBuilder.popup(msg + e.toString());
         }
 
         return messageBuilder.emptyAnswer();
@@ -137,9 +144,5 @@ public class JarvisBot extends TelegramWebhookBot {
 
     public String getLastCallBackId() {
         return lastCallBackId;
-    }
-
-    public MessageBuilder getMessageBuilder(){
-        return messageBuilder;
     }
 }

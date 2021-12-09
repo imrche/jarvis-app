@@ -60,8 +60,10 @@ public abstract class DataObject {
     }
 
     public DTOElement getDeviceDTOElement(Device device){
-        int id = device.getId();
+        return getDeviceDTOElement(device.getId());
+    }
 
+    public DTOElement getDeviceDTOElement(Integer id){
         for (DTOElement e : data){
             if (e.id == id)
                 return e;
@@ -76,5 +78,4 @@ public abstract class DataObject {
     public boolean isEmpty(){
         return data.isEmpty();
     }
-
 }

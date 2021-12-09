@@ -22,6 +22,8 @@ public class TilePool {
     public List<Tile> tileList = new ArrayList<>();
     Map<Integer, List<Object>> feedBackLink = new HashMap<>();
 
+    Tile tileWithTextInputActivated;
+
     public Tile build(BotCommand command){
         Tile tile = new Tile(command.getDescription(),new MenuKeyBoard(command));
         tileList.add(tile);
@@ -35,6 +37,13 @@ public class TilePool {
                 return tile;
         }
         return null;
+    }
+
+    public void addTile(Tile tile){
+        tileList.add(tile);
+    }
+    public void removeTile(Tile tile){
+        tileList.remove(tile);
     }
 
     public void setFeedBack(Integer messageId){
@@ -71,5 +80,13 @@ public class TilePool {
     public void clearFeedBack(Integer messageId){
         String body = messageId == null ? "{}" : "{\"" + messageId.toString() + "\" : \"\"}";
         api.setUpdatingMessage(body);
+    }
+
+    public Tile getTileWithTextInputActivated() {
+        return tileWithTextInputActivated;
+    }
+
+    public void setTileWithTextInputActivated(Tile tile) {
+        this.tileWithTextInputActivated = tile;
     }
 }
