@@ -2,10 +2,12 @@ package org.rch.jarvisapp.bot.ui;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.MessageBuilder;
+import org.rch.jarvisapp.bot.actions.TextInputSupportable;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
+import org.rch.jarvisapp.bot.ui.button.func_interface.TileCaptionUpdater;
 import org.rch.jarvisapp.bot.ui.keyboard.KeyBoard;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -15,8 +17,12 @@ import java.util.*;
 
 public class Tile{
     Stack<Tile> historyStack = new Stack<>();
+
     Integer messageId;
     String caption;
+
+    TileCaptionUpdater tileCaptionUpdater;
+
     List<KeyBoard> content = new ArrayList<>();
     Button stepBack = new Button("Назад", CommonCallBack.stepBackTile.name());
 
@@ -30,12 +36,31 @@ public class Tile{
 
     public Tile() {}
 
+    public List<KeyBoard> getContent() {
+        return content;
+    }
+
     public Tile refresh() throws HomeApiWrongResponseData {
         //todo сделать приватной, чтобы избежать вызовов ненужных
+        if (tileCaptionUpdater != null)
+            setCaption(tileCaptionUpdater.getCaption());
+
         for (KeyBoard kb : content)
             kb.refresh();
 
         return this;
+    }
+
+    public Integer getMessageId() {
+        return messageId;
+    }
+
+    private Boolean isReady2Text(){
+        for (KeyBoard keyBoard : content) {
+            if (keyBoard instanceof TextInputSupportable)
+                return true;//todo ругаться через попап если клав несколько
+        }
+        return false;
     }
 
     private InlineKeyboardMarkup getUnionKeyBoard() throws HomeApiWrongResponseData {
@@ -73,8 +98,9 @@ public class Tile{
         if (messageId == null)
             messageId = getMessageBuilder().sendAsync(caption, getUnionKeyBoard());
         else
-            getMessageBuilder().editAsync(messageId, caption, getUnionKeyBoard(),parseMode);
+            getMessageBuilder().editAsync(messageId, caption, getUnionKeyBoard(), parseMode);
 
+        getTilePool().setTileWithTextInputActivated(isReady2Text() ? this : null);
         getTilePool().setFeedBack(messageId);
     }
 
@@ -103,9 +129,17 @@ public class Tile{
 
     public Tile setCaption(String caption){
         this.caption = caption;
+
         return this;
     }
 
+    public Tile setTileCaptionUpdater(TileCaptionUpdater tcu){
+        this.tileCaptionUpdater = tcu;
+        if (tcu != null)
+            setCaption(tcu.getCaption());
+
+        return this;
+    }
 
     public Tile update(){
         //предполагается что после update keyboard будет создан новый, а не изменен старый
@@ -121,7 +155,9 @@ public class Tile{
 
     public Tile stepBack() throws HomeApiWrongResponseData {
         Tile t = historyStack.pop();
-        this.caption = t.caption;
+        setTileCaptionUpdater(null);
+        setCaption(t.caption);
+
         this.content = t.content;
         this.parseMode = t.parseMode;
 
@@ -131,7 +167,7 @@ public class Tile{
     }
 
     public void popup(String message){
-        getMessageBuilder().popupAsync(messageId.toString(), message);
+        getMessageBuilder().popupAsync(message);
     }
 
     public MessageBuilder getMessageBuilder(){

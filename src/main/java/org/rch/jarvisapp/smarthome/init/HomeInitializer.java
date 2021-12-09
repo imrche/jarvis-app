@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rch.jarvisapp.bot.ui.button.comparators.PlaceComparator;
+import org.rch.jarvisapp.smarthome.Scenario;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
@@ -39,6 +40,7 @@ public class HomeInitializer {
             case "rangehood": return RangeHood.class;
             case "valve": return Valve.class;
             case "window": return Window.class;
+            case "speaker": return Speaker.class;
             default: throw new UnknownDeviceTypeException("Не распознано - " + type);
         }
     }
@@ -47,6 +49,11 @@ public class HomeInitializer {
         final String TYPE = FieldTypes.TYPE.name().toLowerCase(Locale.ROOT);
         JSONObject jsonObject = (JSONObject) json;
         return mapper.readValue(jsonObject.toString(),convert2class(jsonObject.get(TYPE).toString()));
+    }
+
+    private Object createObject(ObjectMapper mapper, Object json, Class<?> clazz) throws JsonProcessingException {
+        JSONObject jsonObject = (JSONObject) json;
+        return mapper.readValue(jsonObject.toString(),clazz);
     }
 
     public HomeInitializer(Api api, SmartHome smartHome) {
@@ -62,6 +69,7 @@ public class HomeInitializer {
         final ObjectMapper mapper = new ObjectMapper();
         JSONArray places = api.getPlaces();
         JSONArray devices = api.getDevices();
+        JSONArray scenarios = api.getScenarios();
 
         smartHome.clearData();
 
@@ -87,6 +95,15 @@ public class HomeInitializer {
                     logger.error("Ошибка в Json",e);
                 } catch (UnknownDeviceTypeException e) {
                     logger.error("Устройство " + e.getMessage(),e);
+                }
+        }
+
+        if (!scenarios.isEmpty()){
+            for (Object obj : scenarios)
+                try {
+                    smartHome.addScenario((Scenario) createObject(mapper, obj,Scenario.class));
+                } catch (JsonProcessingException e) {
+                    logger.error("Ошибка в Json", e);
                 }
         }
 

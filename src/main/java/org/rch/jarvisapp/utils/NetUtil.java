@@ -1,5 +1,6 @@
 package org.rch.jarvisapp.utils;
 
+import org.apache.http.Header;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -44,6 +45,7 @@ public class NetUtil {
         return result;
     }
 
+    //todo обработать таймаут
     public static Map<String, String> sendPOST(String url, String body)  {
         logger.debug("SEND POST " + url + " - " + body);
         Util.logStackTrace(10);
@@ -54,7 +56,8 @@ public class NetUtil {
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(url);
 
-            InputStreamEntity entity = new InputStreamEntity(new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)), body.length());
+            byte[] entityBody = body.getBytes(StandardCharsets.UTF_8);
+            InputStreamEntity entity = new InputStreamEntity(new ByteArrayInputStream(entityBody), entityBody.length);
             entity.setContentType("application/json");
             httpPost.setEntity(entity);
 

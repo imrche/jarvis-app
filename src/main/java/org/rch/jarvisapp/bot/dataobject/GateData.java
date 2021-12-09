@@ -28,6 +28,7 @@ public class GateData extends DataObject{
     public enum ActionValue{
         open,
         close,
+        stop,
         click
     }
 

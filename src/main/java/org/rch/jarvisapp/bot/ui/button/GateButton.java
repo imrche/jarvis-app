@@ -41,8 +41,10 @@ public class GateButton extends Button{
         if (status == null) return "[❓]";
         switch (status){
             case open : return "[\uD83D\uDD13]";
-            case close:return "[\uD83D\uDD12]";
-            case intermediate: return "[⭕]";
+            case close:return "[\uD83D\uDD10]";
+            case opening:return "[⏫]";
+            case closing:return "[⏬]";
+            case partialOpen:return "[⏸]";
             default: return "[❓]";
         }
     }

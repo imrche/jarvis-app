@@ -8,9 +8,11 @@ import org.rch.jarvisapp.bot.actions.gates.ShowGates;
 import org.rch.jarvisapp.bot.actions.lights.ShowLight;
 import org.rch.jarvisapp.bot.actions.scenario.ShowLightsOn;
 import org.rch.jarvisapp.bot.actions.scenario.ShowLightsOnFloor;
+import org.rch.jarvisapp.bot.actions.scenario.ShowAllScenarios;
 import org.rch.jarvisapp.bot.actions.sensors.ShowSensorsStatus;
 import org.rch.jarvisapp.bot.actions.sensors.type.*;
 import org.rch.jarvisapp.bot.actions.settings.ShowSettings;
+import org.rch.jarvisapp.bot.actions.speaker.ShowAllSpeakers;
 import org.rch.jarvisapp.bot.actions.valves.ShowValve;
 import org.rch.jarvisapp.bot.actions.windows.ShowWindowsStatus;
 import org.rch.jarvisapp.smarthome.areas.HomeRoot;
@@ -34,6 +36,8 @@ public enum Menu {
         bathroomHoods       (BotCommand.bathroom,2,"Вытяжки", ShowRangeHood.class),
         bathroomDryer       (BotCommand.bathroom,3,"Сушилки", StubAction.class),
 
+    controlSpeaker          (BotCommand.control,4,"Умные колонки", ShowAllSpeakers.class),
+
     statusPlaceGroup        (BotCommand.status,1, ShowSensorsStatus.description,            ShowSensorsStatus.class, true),
     statusTemperature       (BotCommand.status,2, SensorTypes.temperature.getDescription(), ShowTemperature.class),
     statusHumidity          (BotCommand.status,2, SensorTypes.humidity.getDescription(),    ShowHumidity.class),
@@ -45,8 +49,10 @@ public enum Menu {
     warningsTemperature     (BotCommand.warnings,1,"Температура", StubAction.class),
     warningsHumidity        (BotCommand.warnings,2,"Влажность", StubAction.class),
 
-    showTurnedOnLight       (BotCommand.scenario,1,"Невыключенный свет", ShowLightsOn.class),
-    showTurnedOnFloor       (BotCommand.scenario,2,"Свет на этаже", ShowLightsOnFloor.class),
+    scenarios               (BotCommand.scenario,1,"Сценарии", ShowAllScenarios.class),
+
+    showTurnedOnLight       (BotCommand.scenario,2,"Невыключенный свет", ShowLightsOn.class),
+    showTurnedOnFloor       (BotCommand.scenario,3,"Свет на этаже", ShowLightsOnFloor.class),
 
 
     securityDoorLock        (BotCommand.security,1, "Входной замок", StubAction.class),

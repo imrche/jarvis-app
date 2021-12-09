@@ -3,6 +3,7 @@ package org.rch.jarvisapp.bot.ui.keyboard;
 import org.rch.jarvisapp.bot.actions.gates.ClickGate;
 import org.rch.jarvisapp.bot.actions.gates.CloseGate;
 import org.rch.jarvisapp.bot.actions.gates.OpenGate;
+import org.rch.jarvisapp.bot.actions.gates.StopGate;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.GateButton;
@@ -21,6 +22,7 @@ public class GateKeyBoard extends KeyBoard {
 
     public static final String ON = "Открыть";
     public static final String OFF = "Закрыть";
+    public static final String STOP = "Остановить";
     public static final String CLICK = "Щелк";
 
     private final Gate gate;
@@ -29,6 +31,7 @@ public class GateKeyBoard extends KeyBoard {
         super();
         fullControlButtonRow.add(new Button(ON, new OpenGate(gate)));
         fullControlButtonRow.add(new Button(OFF, new CloseGate(gate)));
+        fullControlButtonRow.add(new Button(STOP, new StopGate(gate)));
         simpleClickButtonRow.add(new Button(CLICK, new ClickGate(gate)));
 
         this.gate = gate;
@@ -47,7 +50,7 @@ public class GateKeyBoard extends KeyBoard {
 
     @Override
     public void refresh() throws HomeApiWrongResponseData {
-        headerBtn.refresh();
+        headerBtn.refresh();//todo убрать обновления после отправки команды
         changeControlButton();
     }
 

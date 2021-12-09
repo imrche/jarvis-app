@@ -5,6 +5,7 @@ import org.rch.jarvisapp.bot.JarvisBot;
 import org.rch.jarvisapp.bot.MessageBuilder;
 import org.rch.jarvisapp.bot.settings.Settings;
 import org.rch.jarvisapp.bot.ui.TilePool;
+import org.rch.jarvisapp.bot.ui.yandexStation.TrackBuilder;
 import org.rch.jarvisapp.smarthome.SmartHome;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.springframework.beans.BeansException;
@@ -48,4 +49,7 @@ public class AppContextHolder implements ApplicationContextAware {
         return AppContextHolder.getContext().getBean(Settings.class);
     }
 
+    public static TrackBuilder getTrackBuilder() {
+        return AppContextHolder.getContext().getBean(TrackBuilder.class);
+    }
 }
