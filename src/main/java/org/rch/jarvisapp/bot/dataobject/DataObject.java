@@ -59,6 +59,15 @@ public abstract class DataObject {
         return element;
     }
 
+    public Integer[] getListDevicesId(){
+        Integer[] result = new Integer[data.size()];
+        int i=0;
+        for (DTOElement e : data)
+            result[i++] = e.id;
+
+        return result;
+    }
+
     public DTOElement getDeviceDTOElement(Device device){
         return getDeviceDTOElement(device.getId());
     }

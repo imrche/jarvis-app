@@ -7,20 +7,26 @@ import org.rch.jarvisapp.bot.ui.button.func_interface.SimpleActionRunner;
 
 public class SimpleRunAction implements Action {
     SimpleActionRunner applier;
-    //todo сделать универсальным прокинув выбор по post-action
+    Boolean needStepBack;
+
+    public SimpleRunAction(SimpleActionRunner applier, boolean stepBack) {
+        this.applier = applier;
+        needStepBack = stepBack;
+    }
 
     public SimpleRunAction(SimpleActionRunner applier) {
-        this.applier = applier;
+        this(applier,true);
     }
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
         applier.run();
-        tile.stepBack().publish();
+        if (needStepBack)
+            tile.stepBack().publish();
     }
 
     @Override
     public int hashCode() {
-        return (applier.hashCode() + this.getClass().hashCode());
+        return (applier.hashCode() + needStepBack.hashCode() + this.getClass().hashCode());
     }//todo переопредилить для applier
 }

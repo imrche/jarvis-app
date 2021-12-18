@@ -68,6 +68,15 @@ public class SwitcherData extends DataObject{
         return null;
     }
 
+    @Nullable
+    public Boolean getDeviceValue(Integer id){
+        for (DTOElement e : data){
+            if (e.id == id)
+                return ((SwitcherElement)e).value;
+        }
+        return null;
+    }
+
     public SwitcherData reverse(){
         for (DTOElement e : data){
             ((SwitcherElement)e).value = !((SwitcherElement)e).value;

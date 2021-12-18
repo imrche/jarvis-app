@@ -106,7 +106,7 @@ public class HomeInitializer {
                     logger.error("Ошибка в Json", e);
                 }
         }
-
+        smartHome.initCacheDeviceStatus();
         logger.info("DONE! Home was initialized!");
     }
 }

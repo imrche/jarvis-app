@@ -24,19 +24,26 @@ import java.util.function.Predicate;
 public class ShowLightsOn implements Action {
     SmartHome smartHome = AppContextHolder.getSH();
     List<Predicate<Device>> listPredicate = new ArrayList<>();
+
     {
         listPredicate.add(Predicates.isTypeOf(Light.class));
     }
 
-    public ShowLightsOn(){
-
-    }
+    public ShowLightsOn(){}
 
     @Override
     public void run(Tile tile) throws HomeApiWrongResponseData {
         KeyBoard kbLight = new LightKeyBoard();
 
+        listPredicate.add(Predicates.statusIs(true));
+
         List<Light> lightList = smartHome.getDevicesWithFilter(listPredicate,Light.class);
+
+
+
+
+
+
 
         //for (Light device : lightList)
       //      kbLight.addButton(device.getRow(), new LightButton(device));
@@ -58,13 +65,14 @@ public class ShowLightsOn implements Action {
 
         kbLight.refresh();
 
+/*
         for (Button btn : kbLight.getButtonsList())
             btn.setVisible(((LightButton)btn).getStatus());
+*/
 
 
         tile.update()
                 .setCaption("Невыключенный свет")
                 .setKeyboard(kbLight);
-
     }
 }

@@ -3,6 +3,9 @@ package org.rch.jarvisapp.smarthome;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
+import org.rch.jarvisapp.bot.dataobject.LightCommandData;
+import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.areas.Area;
 import org.rch.jarvisapp.smarthome.areas.Place;
@@ -26,6 +29,41 @@ public class SmartHome {
     List<Device> devices = new ArrayList<>();
     List<Place> places = new ArrayList<>();
     List<Scenario> scenarios = new ArrayList<>();
+
+    private final Map<Device, Boolean> deviceStatusCache = new HashMap<>();
+
+    public void initCacheDeviceStatus(){
+        for (Device device : devices)
+            deviceStatusCache.put(device,null);
+    }
+
+    public Boolean getCachedStatus(Device device){
+        return deviceStatusCache.get(device);
+    }
+
+    public void cacheDeviceStatus(){
+        deviceStatusCache.replaceAll((d, v) -> null);
+
+        SwitcherData lightCD = new SwitcherData();
+        for (Device device : devices) {
+            if (device instanceof Light)
+                lightCD.addSwitcher(device);
+        }
+
+        try {
+            SwitcherData sdResponse = api.getStatusLight(lightCD);
+
+            for (Device device : devices){
+                Boolean b = sdResponse.getDeviceValue(device);
+                if (b != null)
+                    deviceStatusCache.put(device, b);
+            }
+
+        } catch (HomeApiWrongResponseData homeApiWrongResponseData) {
+            homeApiWrongResponseData.printStackTrace();
+        }
+    }
+
 
   //  @Autowired
    // Predicates predicates;
@@ -117,6 +155,8 @@ public class SmartHome {
     }
 
     public <T extends Device> List<T> getDevicesWithFilter(List<Predicate<Device>> list, Class<T> class2convert){
+        //if (list.contains(Predicates.statusIs().))
+        cacheDeviceStatus();
         List<Device> listDevice = devices
                                     .stream()
                                     .filter(Predicates.accumulator(list))

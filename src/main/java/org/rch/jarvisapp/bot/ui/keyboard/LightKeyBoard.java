@@ -3,12 +3,14 @@ package org.rch.jarvisapp.bot.ui.keyboard;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.lights.SetLight;
 import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
+import org.rch.jarvisapp.bot.actions.speaker.player.settings.SimpleRunAction;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
+import org.rch.jarvisapp.bot.ui.button.func_interface.CaptionUpdater;
 import org.rch.jarvisapp.smarthome.areas.Place;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import org.rch.jarvisapp.smarthome.devices.Light;
@@ -20,10 +22,18 @@ import java.util.stream.Collectors;
 public class LightKeyBoard extends KeyBoard implements DeviceContainer {
     private final List<Button> groupButtonRow = new ArrayList<>();
     private final List<Button> additionalPropertiesButtonRow = new ArrayList<>();
+    private final List<Button> switcherButtonRow = new ArrayList<>();
 
     public static final String ON = "ON";
     public static final String OFF = "OFF";
     public static final String ADD = "Дополнительно";
+
+
+    private MODES currentMode = MODES.switcher;
+    private Button switcherButton = new Button("+", new SimpleRunAction(this::switchMode,false), this::getCurrentMode);
+    public enum MODES{
+        additional,switcher
+    }
 
     public LightKeyBoard() {
         this(null);//todo
@@ -35,7 +45,20 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
         groupButtonRow.add(new Button(ON, CommonCallBack.empty.name()));
         groupButtonRow.add(new Button(OFF, CommonCallBack.empty.name()));
         additionalPropertiesButtonRow.add(new Button(ADD, new ShowAdditionalPropertiesAction(place)));
+        switcherButtonRow.add(switcherButton);
     }
+
+    private void switchMode(){
+        currentMode = currentMode == MODES.switcher ? MODES.additional : MODES.switcher;
+
+        System.out.println("current " + currentMode.name());
+
+    }
+    private String getCurrentMode(){
+        return currentMode.name();
+    }
+
+
 
     private Button getGroupButton(String state){
         for (Button button : groupButtonRow)
@@ -44,6 +67,8 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
 
         return new Button(state, CommonCallBack.empty.name()); //todo warnings
     }
+
+
 
     private List<Button> prepareGroupButton(){
         SwitcherData cmd = new SwitcherData();
@@ -123,6 +148,7 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
                 }
             }
             defineVisibilityGroupButton();
+            switcherButton.refresh();
         }
     }
 
@@ -135,6 +161,7 @@ public class LightKeyBoard extends KeyBoard implements DeviceContainer {
             if (button instanceof LightButton) {
                 kb.add(new ArrayList<>(prepareGroupButton()));
                 kb.add(new ArrayList<>(additionalPropertiesButtonRow));
+                kb.add(new ArrayList<>(switcherButtonRow));
                 break;
             }
         }

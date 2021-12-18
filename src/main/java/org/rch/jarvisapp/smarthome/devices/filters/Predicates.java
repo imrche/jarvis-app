@@ -13,7 +13,7 @@ import java.util.function.Predicate;
 
 public class Predicates {
 
-   // private static SmartHome smartHome = AppContextHolder.getSH();
+    private static SmartHome smartHome = AppContextHolder.getSH();
 
     public static <T extends Device> Predicate<T> accumulator(List<Predicate<T>> list){
         return list.stream().reduce(Predicate::and).orElse(x->true);
@@ -29,5 +29,10 @@ public class Predicates {
 
     public static <T extends Device> Predicate<Device> isTypeOf(Class<T> type){
         return type::isInstance;
+    }
+
+
+    public static <T extends Device> Predicate<T> statusIs(Boolean status){
+        return p -> smartHome.getCachedStatus(p) == status;
     }
 }

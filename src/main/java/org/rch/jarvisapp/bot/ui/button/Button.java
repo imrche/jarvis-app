@@ -29,7 +29,7 @@ public class Button{
         setCallBack(data);
     }
 
-    public Button(String name, Action data,CaptionUpdater updater){
+    public Button(String name, Action data, CaptionUpdater updater){
         inlineButton.setText(name);
         action = data;
         this.updater = updater;

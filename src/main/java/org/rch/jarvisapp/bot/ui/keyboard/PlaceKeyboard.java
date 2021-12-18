@@ -36,6 +36,7 @@ public class PlaceKeyboard extends KeyBoard{
     }
 
     public void construct(List<Place> places) {
+        if (places.size() == 0) return;//todo не понимаю почему ломается на пустом списке
         try {
             for (Place place : places) {//todo make a filter for hiding places without device of this class
                 //if (smartHome.hasDevicesOfType(Light.class, place))
