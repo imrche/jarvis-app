@@ -39,14 +39,14 @@ public class LightParamsKeyBoard extends KeyBoard {
         addButton(i, new Button("--------[ТЕМПЕРАТУРА]--------", CommonCallBack.empty.name()));
 
         i++;
-        addButton(i, new Button("\uD83D\uDFE7", s -> setTemperature(0)));
-        addButton(i, new Button("⬜️", s -> setTemperature(4200)));
-        addButton(i, new Button("\uD83D\uDFE6", s -> setTemperature(8000)));
+        addButton(i, new Button("\uD83D\uDFE7", s -> setTemperature(50)));
+        addButton(i, new Button("⬜️", s -> setTemperature(200)));
+        addButton(i, new Button("\uD83D\uDFE6", s -> setTemperature(400)));
 
         i++;
-        addButton(i, new Button("➖", s -> setTemperature(currentTemperature - 100)));
+        addButton(i, new Button("➖", s -> setTemperature(currentTemperature - 10)));
         addButton(i, new Button("", CommonCallBack.empty.name(), this::getTemperature));
-        addButton(i, new Button("➕", s -> setTemperature(currentTemperature + 100)));
+        addButton(i, new Button("➕", s -> setTemperature(currentTemperature + 10)));
 
 
         i++;
