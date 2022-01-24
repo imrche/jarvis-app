@@ -2,7 +2,7 @@ package org.rch.jarvisapp.bot.actions.speaker.player;
 
 import org.rch.jarvisapp.bot.actions.Action;
 import org.rch.jarvisapp.bot.actions.speaker.command.SpeakerTTS;
-import org.rch.jarvisapp.bot.actions.speaker.player.settings.SimpleRunAction;
+import org.rch.jarvisapp.bot.actions.SimpleRunAction;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.Tile;
 import org.rch.jarvisapp.bot.ui.button.Button;
@@ -23,7 +23,7 @@ public class ShowTTSMessageList implements Action {
         KeyBoard kb = new KeyBoard();
         int i=1;
         for (String s : messageListGetter.get())
-            kb.addButton(i++, new Button(s, new SimpleRunAction(() -> sendMessage(s))));
+            kb.addButton(i++, new Button(s, new SimpleRunAction(() -> sendMessage(s), SimpleRunAction.Type.STEP_BACK)));
         tile.update()
                 .setCaption("Выбрать сообщение")
                 .setKeyboard(kb);

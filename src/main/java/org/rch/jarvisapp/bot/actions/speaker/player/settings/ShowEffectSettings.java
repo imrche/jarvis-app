@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.actions.speaker.player.settings;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.actions.SimpleRunAction;
 import org.rch.jarvisapp.bot.dataobject.SpeakerSettings;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
@@ -24,7 +25,7 @@ public class ShowEffectSettings implements Action {
         KeyBoard kb = new KeyBoard();
         int i = 1;
         for (String effect : listEffects)
-            kb.addButton(i++, new Button(effect, new SimpleRunAction(() -> setEffect(effect))));
+            kb.addButton(i++, new Button(effect, new SimpleRunAction(() -> setEffect(effect), SimpleRunAction.Type.STEP_BACK)));
 
         tile.update()
                 .setCaption(speaker.getPlacement().getName())

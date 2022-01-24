@@ -74,10 +74,12 @@ public class ShowLight implements Action, RunnableByPlace {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         KeyBoard kbMain = new LightKeyBoard();
 
+/*
         for (KeyBoard kb : kbList){
             if (kb instanceof LightKeyBoard)
                 kb.refresh();
-        }
+        }//todo возможно лишнее
+*/
 
         for (KeyBoard kb : kbList)
             kbMain.merge(kb);

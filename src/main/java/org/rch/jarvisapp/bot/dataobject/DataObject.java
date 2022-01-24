@@ -16,6 +16,7 @@ public abstract class DataObject {
     protected final ObjectMapper mapper = new ObjectMapper();
     List<DTOElement> data = new ArrayList<>();
     Logger logger = LoggerFactory.getLogger(this.getClass());
+    Boolean immutable = false;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class DTOElement {
@@ -86,5 +87,9 @@ public abstract class DataObject {
 
     public boolean isEmpty(){
         return data.isEmpty();
+    }
+
+    public void setImmutable(){
+        immutable = true;
     }
 }

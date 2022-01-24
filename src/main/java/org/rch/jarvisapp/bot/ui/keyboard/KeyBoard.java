@@ -43,6 +43,13 @@ public class KeyBoard{
         return buttons;
     }
 
+    public KeyBoard clearButtons(){
+        buttons.clear();
+        categorizedMap.clear();
+
+        return this;
+    }
+
     public KeyBoard addButton(int rowNum, Button button){
         return addButton(rowNum, null, button);
     }
@@ -95,5 +102,9 @@ public class KeyBoard{
         else
             for (Button button : getButtonsList())
                 button.refresh();
+    }
+
+    public KeyBoard build(){
+        return this;
     }
 }

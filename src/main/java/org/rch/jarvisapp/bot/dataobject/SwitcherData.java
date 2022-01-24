@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.rch.jarvisapp.smarthome.devices.Device;
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SwitcherData extends DataObject{
 
@@ -11,6 +13,10 @@ public class SwitcherData extends DataObject{
     private static class SwitcherElement extends DTOElement {
         @JsonInclude(JsonInclude.Include.NON_NULL)
         public Boolean value;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public Integer onTimer;
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        public Integer offTimer;
 
         public SwitcherElement() {}
 
@@ -47,6 +53,26 @@ public class SwitcherData extends DataObject{
 
     public void setDeviceValue(Device device, Boolean value){
         ((SwitcherElement)getDeviceDTOElement(device)).value = value;
+    }
+
+    public void setTimer(Device device, Boolean value, Integer duration){
+        setTimer(device, value, 0, duration);
+    }
+    public void setTimer(Device device, Boolean value, Integer delay, Integer duration){
+        SwitcherElement element = ((SwitcherElement)getDeviceDTOElement(device));
+        duration += delay;
+        element.onTimer = value ? delay : duration;
+        element.offTimer = !value ? delay : duration;
+    }
+
+    public Map<String,Integer> getTimer(Device device){
+        Map<String,Integer> result =  new HashMap<>();
+        SwitcherElement element = (SwitcherElement)getDeviceDTOElement(device);
+
+        result.put("ON", element.onTimer);
+        result.put("OFF", element.offTimer);
+
+        return result;
     }
 
     public void setDeviceValue(SwitcherElement element, Boolean value){
@@ -110,5 +136,15 @@ public class SwitcherData extends DataObject{
             return sd.getListElements().equals(getListElements());
         } else
             return false;
+    }
+
+
+    public SwitcherData getClone(){
+        try {
+            return new SwitcherData(this.getData());
+        } catch (JsonProcessingException e) {
+            logger.error("Не удалось клонировать объект SwitcherData",e);
+            return new SwitcherData();
+        }
     }
 }

@@ -3,7 +3,6 @@ package org.rch.jarvisapp.smarthome;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import org.rch.jarvisapp.bot.dataobject.LightCommandData;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.smarthome.api.Api;
@@ -156,7 +155,7 @@ public class SmartHome {
 
     public <T extends Device> List<T> getDevicesWithFilter(List<Predicate<Device>> list, Class<T> class2convert){
         //if (list.contains(Predicates.statusIs().))
-        cacheDeviceStatus();
+        //cacheDeviceStatus();
         List<Device> listDevice = devices
                                     .stream()
                                     .filter(Predicates.accumulator(list))

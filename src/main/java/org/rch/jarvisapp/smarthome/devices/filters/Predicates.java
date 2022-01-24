@@ -7,7 +7,9 @@ import org.rch.jarvisapp.smarthome.devices.Device;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 
@@ -22,6 +24,7 @@ public class Predicates {
     public static <T extends Device> Predicate<T> isPlaceLaying(Place place){
         return p -> p.getPlacement() == place;
     }
+
 
     public static <T extends Device> Predicate<T> isPlaceLayingAll(Place place){
         return p -> p.getPlacement() == place || AppContextHolder.getSH().getPlaceChildren(place).contains(p.getPlacement());

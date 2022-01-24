@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.actions.speaker.player.settings;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.actions.SimpleRunAction;
 import org.rch.jarvisapp.bot.dataobject.SpeakerSettings;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
@@ -22,7 +23,7 @@ public class ShowCoverSizeSettings implements Action {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         KeyBoard kb = new KeyBoard();
         for (String size : sizes)
-            kb.addButton(1, new Button(size + "x" + size, new SimpleRunAction(() -> setSize(size))));
+            kb.addButton(1, new Button(size + "x" + size, new SimpleRunAction(() -> setSize(size), SimpleRunAction.Type.STEP_BACK)));
 
         tile.update()
                 .setCaption(speaker.getPlacement().getName())

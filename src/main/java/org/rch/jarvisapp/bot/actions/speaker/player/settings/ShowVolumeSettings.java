@@ -2,6 +2,7 @@ package org.rch.jarvisapp.bot.actions.speaker.player.settings;
 
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.actions.SimpleRunAction;
 import org.rch.jarvisapp.bot.dataobject.SpeakerSettings;
 import org.rch.jarvisapp.bot.enums.ParseMode;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
@@ -22,7 +23,7 @@ public class ShowVolumeSettings implements Action {
     public void run(Tile tile) throws HomeApiWrongResponseData {
         KeyBoard kb = new KeyBoard();
         for (Integer level : VolumeLine.volumeScale)
-            kb.addButton(1, new Button(String.valueOf(level), new SimpleRunAction(() -> setVolume(level))));
+            kb.addButton(1, new Button(String.valueOf(level), new SimpleRunAction(() -> setVolume(level), SimpleRunAction.Type.STEP_BACK)));
 
         tile.update()
                 .setCaption(speaker.getPlacement().getName())

@@ -6,10 +6,18 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 import org.rch.jarvisapp.AppContextHolder;
 import org.rch.jarvisapp.bot.actions.Action;
+import org.rch.jarvisapp.bot.actions.additional.ReverseSWManage;
 import org.rch.jarvisapp.bot.actions.lights.ReverseLight;
+import org.rch.jarvisapp.bot.actions.lights.ShowLightProperties;
+import org.rch.jarvisapp.bot.actions.lights.ShowTimerBuilder;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
+import org.rch.jarvisapp.bot.enums.StatusVisual;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
+import org.rch.jarvisapp.bot.ui.button.func_interface.CaptionUpdater;
 import org.rch.jarvisapp.smarthome.devices.Light;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -17,86 +25,86 @@ import org.rch.jarvisapp.smarthome.devices.Light;
 public class LightButton extends Button{
     Light light;
     Boolean status;
-
     Mode currentMode;
-
-    Action switchAction;
-    Action menuAction;
+    Map<Mode,ModeData> modeActionsMap = new HashMap<>();
+    final SwitcherData patternCD = new SwitcherData();
 
     static class ModeData{
         Action action;
+        CaptionUpdater captionUpdater;
+
+        public ModeData(Action action, CaptionUpdater captionUpdater) {
+            this.action = action;
+            this.captionUpdater = captionUpdater;
+        }
 
         public Action getAction() {
             return action;
         }
-        public void setAction(Action action) {
-            this.action = action;
+        public String getCaption() {
+            return captionUpdater.getCaption();
         }
     }
 
     public enum Mode{
-        switcher(new ModeData()),
-        menu(new ModeData());
+        SWITCHER("Выключатели"),
+        CONNECT_MANAGE("Доступность"),
+        LIGHT_PARAMS("Свойства"),
+        TIMER("Таймеры");
 
-        ModeData data;
-        Mode(ModeData data){
-            this.data = data;
+        String name;
+
+        Mode(String name){
+            this.name = name;
         }
 
-        public Action getAction(){
-            return data.getAction();
-        }
+        public String getName(){return name;}
 
-        public void setAction(Action action){
-            data.setAction(action);
+        public Mode getNext(){
+            if (ordinal() == values().length - 1)
+                return values()[0];
+            return values()[ordinal()+1];
         }
     }
-
-    final SwitcherData patternCD = new SwitcherData();
-
+    
     public LightButton(Light light){
         this.light = light;
         patternCD.addSwitcher(light);
-        //setCallBack(new ReverseLight(patternCD));
-        Mode.switcher.setAction(new ReverseLight(patternCD));
 
-        setMode(Mode.switcher);
+        modeActionsMap.put(Mode.SWITCHER, new ModeData(new ReverseLight(patternCD), () -> light.getName() + " " + StatusVisual.LIGHT_SWITCHER.get(status)));
+        modeActionsMap.put(Mode.CONNECT_MANAGE, new ModeData(new ReverseSWManage(patternCD), () -> light.getName() + " " + StatusVisual.CONNECT_MANAGER.get(status)));
+        modeActionsMap.put(Mode.TIMER, new ModeData(new ShowTimerBuilder(light), () -> light.getName() + "⏲"));
+        modeActionsMap.put(Mode.LIGHT_PARAMS, new ModeData(new ShowLightProperties(light), () -> light.getName() + " " + "\uD83C\uDF9A"));
+
+        setMode(Mode.SWITCHER);
     }
 
     public void setMode(Mode mode){
        currentMode = mode;
-       setCallBack(mode.getAction());
+       setCallBack(modeActionsMap.get(mode).getAction());
+       setCaption();
     }
-
-
-
 
     public void setCaption() {
-        String caption;
-        switch (currentMode){
-            case switcher: caption = light.getName() + " " + visualizeStatus(status);
-                break;
-            case menu: caption = light.getName();
-            default: caption = "?";
-        }
-        super.setCaption(caption);
+        super.setCaption(modeActionsMap.get(currentMode).getCaption());
     }
 
-
-    public static String visualizeStatus(Boolean status){
-        if (status == null) return "[❓]";
-
-        String on = "\uD83C\uDF15";
-        String off = "\uD83C\uDF11";
-
-        return status ? on : off;
+    public void setStatus(Boolean status) {
+        this.status = status;
+        setCaption();
     }
 
     @Override
     public void refresh() throws HomeApiWrongResponseData {
-        SwitcherData sd = AppContextHolder.getApi().getStatusLight(patternCD);
-        status = sd.getDeviceValue(light);
-
-        setCaption();
+        if (currentMode == Mode.SWITCHER) {
+            SwitcherData sd = AppContextHolder.getApi().getStatusLight(patternCD);
+            setStatus(sd.getDeviceValue(light));
+        }
+        if (currentMode == Mode.CONNECT_MANAGE) {
+            SwitcherData cd = AppContextHolder.getApi().getStatusSwitchManager(patternCD);
+            setStatus(cd.getDeviceValue(light));
+        }
+        if (currentMode == Mode.LIGHT_PARAMS)
+            setVisible(false);
     }
 }

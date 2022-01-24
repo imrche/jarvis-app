@@ -23,6 +23,12 @@ public class Button{
         setCallBack(data);
     }
 
+    public Button(String name, String data, CaptionUpdater updater){
+        setCaption(name);
+        this.updater = updater;
+        setCallBack(data);
+    }
+
     public Button(String name, Action data){
         inlineButton.setText(name);
         action = data;

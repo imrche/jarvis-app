@@ -21,6 +21,8 @@ public class Api {
     String proto;
     String ip;
     String port;
+    String login;
+    String password;
 
     final String STATUS_LIGHT = "/status/light";
     final String STATUS_DEVICE = "/status/device";
@@ -118,6 +120,10 @@ public class Api {
     }
 
     public void setStatusLight(SwitcherData req) {
+        NetUtil.sendPOST(getURL() + SET_LIGHT, req.getData());
+    }
+
+    public void setParametersLight(LightData req) {
         NetUtil.sendPOST(getURL() + SET_LIGHT, req.getData());
     }
 

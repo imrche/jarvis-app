@@ -1,170 +1,168 @@
 package org.rch.jarvisapp.bot.ui.keyboard;
 
 import org.rch.jarvisapp.AppContextHolder;
-import org.rch.jarvisapp.bot.actions.lights.SetLight;
-import org.rch.jarvisapp.bot.actions.additional.ShowAdditionalPropertiesAction;
-import org.rch.jarvisapp.bot.actions.speaker.player.settings.SimpleRunAction;
+import org.rch.jarvisapp.bot.actions.SimpleRunAction;
 import org.rch.jarvisapp.bot.dataobject.SwitcherData;
-import org.rch.jarvisapp.bot.enums.CommonCallBack;
 import org.rch.jarvisapp.bot.exceptions.HomeApiWrongResponseData;
 import org.rch.jarvisapp.bot.ui.DeviceContainer;
 import org.rch.jarvisapp.bot.ui.button.Button;
 import org.rch.jarvisapp.bot.ui.button.LightButton;
-import org.rch.jarvisapp.bot.ui.button.func_interface.CaptionUpdater;
-import org.rch.jarvisapp.smarthome.areas.Place;
+import org.rch.jarvisapp.smarthome.api.Api;
 import org.rch.jarvisapp.smarthome.devices.Device;
-import org.rch.jarvisapp.smarthome.devices.Light;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.rch.jarvisapp.bot.ui.button.LightButton.*;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LightKeyBoard extends KeyBoard implements DeviceContainer {
-    private final List<Button> groupButtonRow = new ArrayList<>();
-    private final List<Button> additionalPropertiesButtonRow = new ArrayList<>();
+    private static final Api api = AppContextHolder.getApi();
+    GroupSwitchButtons groupSwitchButtons;
     private final List<Button> switcherButtonRow = new ArrayList<>();
+    List<LightButton> lightButtonList = new ArrayList<>();
+    SwitcherData cmdForRequest = new SwitcherData();
 
-    public static final String ON = "ON";
-    public static final String OFF = "OFF";
-    public static final String ADD = "Дополнительно";
+    private Mode currentMode = Mode.SWITCHER;
+    private final Button switcherButton = new Button("+", new SimpleRunAction(this::switchMode), this::getSwitcherButtonName);
 
+    private static class GroupSwitchButtons{
+        private enum TypeButtons{
+            HEADER("Весь свет :"),
+            ON("ВКЛ"),
+            OFF("ВЫКЛ");
 
-    private MODES currentMode = MODES.switcher;
-    private Button switcherButton = new Button("+", new SimpleRunAction(this::switchMode,false), this::getCurrentMode);
-    public enum MODES{
-        additional,switcher
+            private final String description;
+
+            TypeButtons(String description){
+                this.description = description;
+            }
+        }
+
+        private Mode currentMode;
+
+        private final Map<TypeButtons,Button> groupButtonRow = new TreeMap<>();
+        private final List<LightButton> lightButtons;
+
+        SwitcherData cmd = new SwitcherData();
+
+        GroupSwitchButtons(List<LightButton> buttons){
+            lightButtons = buttons;
+
+            for (TypeButtons typeButtons : TypeButtons.values())
+                groupButtonRow.put(typeButtons, new Button(typeButtons.description, new SimpleRunAction(() -> run(typeButtons), SimpleRunAction.Type.UPDATE)));
+
+            for (LightButton button : lightButtons)
+                cmd.addSwitcher(button.getLight());
+        }
+
+        void defineVisibility(){
+            long turnedOnCnt = lightButtons.stream().filter(LightButton::getStatus).count();
+            groupButtonRow.get(TypeButtons.ON).setVisible(turnedOnCnt != lightButtons.size());
+            groupButtonRow.get(TypeButtons.OFF).setVisible(turnedOnCnt != 0);
+        }
+
+        private void run(TypeButtons typeButtons){
+            switch(typeButtons){
+                case ON: cmd.setAllDevicesValue(true); break;
+                case OFF: cmd.setAllDevicesValue(false); break;
+                default: return;
+            }
+
+            switch (currentMode){
+                case SWITCHER:
+                    api.setStatusLight(cmd); break;
+                case CONNECT_MANAGE:
+                    api.setStatusSwitchManager(cmd); break;
+                case TIMER:
+                    System.out.println("Таймеры");; break;
+            }
+        }
+
+        void hide(){
+            for (Button btn : groupButtonRow.values())
+                btn.setVisible(false);
+        }
+
+        void show(){
+            groupButtonRow.get(TypeButtons.HEADER).setVisible(true);
+            defineVisibility();
+        }
+
+        List<Button> get(){
+            if (currentMode == Mode.LIGHT_PARAMS)
+                return new ArrayList<>();
+
+            return groupButtonRow.values().stream().filter(Button::isVisible).collect(Collectors.toList());
+        }
     }
 
-    public LightKeyBoard() {
-        this(null);//todo
-    }
-
-    public LightKeyBoard(Place place){
+    public LightKeyBoard(){
         super();
-        groupButtonRow.add(new Button("[Весь свет]", CommonCallBack.empty.name()));
-        groupButtonRow.add(new Button(ON, CommonCallBack.empty.name()));
-        groupButtonRow.add(new Button(OFF, CommonCallBack.empty.name()));
-        additionalPropertiesButtonRow.add(new Button(ADD, new ShowAdditionalPropertiesAction(place)));
         switcherButtonRow.add(switcherButton);
     }
 
     private void switchMode(){
-        currentMode = currentMode == MODES.switcher ? MODES.additional : MODES.switcher;
+        currentMode = currentMode.getNext();
+        groupSwitchButtons.currentMode = currentMode;
 
-        System.out.println("current " + currentMode.name());
-
-    }
-    private String getCurrentMode(){
-        return currentMode.name();
-    }
-
-
-
-    private Button getGroupButton(String state){
-        for (Button button : groupButtonRow)
-            if (state.equals(button.getCaption()))
-                return button;
-
-        return new Button(state, CommonCallBack.empty.name()); //todo warnings
+        for (Button button : getButtonsList()) {
+            if (button instanceof LightButton)
+                ((LightButton) button).setMode(currentMode);
+        }
     }
 
-
-
-    private List<Button> prepareGroupButton(){
-        SwitcherData cmd = new SwitcherData();
-
-        for (Button button : getButtonsList())
-            if (button instanceof LightButton) {
-                Light light = ((LightButton) button).getLight();
-                cmd.addSwitcher(light);
-            }
-//todo если лампа одна, то не делать общ кнопки
-        if (cmd.getDeviceCount() > 1) {
-            getGroupButton(ON).setCallBack(new SetLight().setData(cmd.setAllDevicesValue(true)));//todo починить клонированием
-            getGroupButton(OFF).setCallBack(new SetLight().setData(cmd.setAllDevicesValue(false)));
-
-            defineVisibilityGroupButton();
-        } else
-            hideGroupButton();
-
-        return groupButtonRow.stream().filter(Button::isVisible).collect(Collectors.toList());
+    private String getSwitcherButtonName(){
+        return "РЕЖИМ: [" + currentMode.getName() + "]";
     }
 
     public void hideAllAdditionalBtn(){
-        hideGroupButton();//todo сделать по уму
-        for (Button btn : additionalPropertiesButtonRow)
-            btn.setVisible(false);
+        groupSwitchButtons.hide();
     }
 
+    @Override
+    public LightKeyBoard build(){
+        getButtonsList().stream().filter(LightButton.class::isInstance).forEach(o -> lightButtonList.add((LightButton) o));
 
-    private void defineVisibilityGroupButton(){
-        Button btnOn = getGroupButton(ON);
-        Button btnOff = getGroupButton(OFF);
-        btnOn.setVisible(true);
-        btnOff.setVisible(true);
+        groupSwitchButtons = new GroupSwitchButtons(lightButtonList);
+        groupSwitchButtons.currentMode = currentMode;
 
-        int countButton = 0;
-        int countOn = 0;
+        for (LightButton button : lightButtonList)
+            cmdForRequest.addSwitcher(button.getLight());
 
-        for (Button button : getButtonsList()) {
-            if (button instanceof LightButton) {
-                countButton++;
-
-                if (((LightButton) button).getStatus())
-                    countOn++;
-            }
-        }
-
-        if (countOn == 0)
-            btnOff.setVisible(false);
-        if (countButton == countOn)
-            btnOn.setVisible(false);
-    }
-
-    private void hideGroupButton(){
-        for (Button btn : groupButtonRow)
-            btn.setVisible(false);//todo если тут оказались, то значит группа в этой клавиатуре никогда не будет нужна
-        //getGroupButton(ON).setVisible(false);
-        //getGroupButton(OFF).setVisible(false);
+        return this;
     }
 
     @Override
     public void refresh() throws HomeApiWrongResponseData {
-        SwitcherData dcdPattern = new SwitcherData();
-        for (Button button : getButtonsList()) {
-            if (button instanceof LightButton)
-                dcdPattern.mergeDTO(((LightButton) button).getPatternCD());
+        switcherButton.refresh();
+        if (currentMode == Mode.TIMER || currentMode == Mode.LIGHT_PARAMS || cmdForRequest.isEmpty())
+            return;
+
+        SwitcherData cmdResponse;
+        switch(currentMode){
+            case SWITCHER:
+                cmdResponse = AppContextHolder.getApi().getStatusLight(cmdForRequest); break;
+            case CONNECT_MANAGE:
+                cmdResponse = AppContextHolder.getApi().getStatusSwitchManager(cmdForRequest); break;
+            default: cmdResponse = new SwitcherData();
         }
 
-        if (!dcdPattern.isEmpty()) {//todo  продублировать в аналогах
-            SwitcherData dcdResponse = AppContextHolder.getApi().getStatusLight(dcdPattern);
-            //todo проверку на то что вернулись все запрошенные
-            for (Button button : getButtonsList()) {
-                if (button instanceof LightButton) {
-                    LightButton btn = (LightButton) button;
-                    btn.setStatus(dcdResponse.getDeviceValue(btn.getLight()));//todo обработать если статуса нет
+        for (LightButton lb : lightButtonList)
+            lb.setStatus(cmdResponse.getDeviceValue(lb.getLight()));//todo обработать если статуса нет
 
-                    btn.setCaption();
-                }
-            }
-            defineVisibilityGroupButton();
-            switcherButton.refresh();
-        }
+        groupSwitchButtons.defineVisibility();
     }
 
     @Override
-    public List<List<Button>> getInlineButtons(){
-        //List<List<Button>> kb = new ArrayList<>(super.getButtons());
+    public List<List<Button>> getVisibleButtons(){
         List<List<Button>> kb = new ArrayList<>(super.getVisibleButtons());
 
-        for (Button button : getButtonsList()) {
+        for (Button button : getButtonsList())
             if (button instanceof LightButton) {
-                kb.add(new ArrayList<>(prepareGroupButton()));
-                kb.add(new ArrayList<>(additionalPropertiesButtonRow));
+                kb.add(new ArrayList<>(groupSwitchButtons.get()));
                 kb.add(new ArrayList<>(switcherButtonRow));
                 break;
             }
-        }
 
         return kb;
     }

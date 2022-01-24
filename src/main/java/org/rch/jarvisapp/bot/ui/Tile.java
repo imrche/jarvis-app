@@ -42,11 +42,14 @@ public class Tile{
 
     public Tile refresh() throws HomeApiWrongResponseData {
         //todo сделать приватной, чтобы избежать вызовов ненужных
+        for (KeyBoard kb : content)
+            kb.refresh();
+
+        System.out.println("обновление тайла");
         if (tileCaptionUpdater != null)
             setCaption(tileCaptionUpdater.getCaption());
 
-        for (KeyBoard kb : content)
-            kb.refresh();
+//todo если сломаются сценарии, значит порядок запуска был важен
 
         return this;
     }
@@ -69,9 +72,10 @@ public class Tile{
         List<List<InlineKeyboardButton>> mList = new ArrayList<>();
 
         for (KeyBoard keyBoard : content) {
-            keyBoard.refresh();
+           // keyBoard.refresh();
 
-            for (List<Button> lBtn : keyBoard.getInlineButtons()){
+           // for (List<Button> lBtn : keyBoard.getInlineButtons()){
+            for (List<Button> lBtn : keyBoard.getVisibleButtons()){
                 List<InlineKeyboardButton> list = new ArrayList<>();
                 for (Button btn : lBtn)
                     list.add(btn.getInlineButton());
@@ -95,6 +99,7 @@ public class Tile{
     }
 
     public void publish() throws HomeApiWrongResponseData {
+        refresh();
         if (messageId == null)
             messageId = getMessageBuilder().sendAsync(caption, getUnionKeyBoard());
         else
@@ -106,7 +111,8 @@ public class Tile{
 
     public Tile setKeyboard(KeyBoard keyBoard){
         content.clear();
-        content.add(keyBoard);
+        //content.add(keyBoard);
+        addKeyboardWithBuild(keyBoard);
         return this;
     }
 
@@ -116,14 +122,26 @@ public class Tile{
     }
 
     public Tile addKeyboard(KeyBoard keyBoard){
-        content.add(keyBoard);
+        //content.add(keyBoard);
+        addKeyboardWithBuild(keyBoard);
         return this;
     }
 
+    private void addKeyboardWithBuild(KeyBoard keyBoard){
+        keyBoard.build();
+        content.add(keyBoard);
+    }
+
+    private void addKeyboardWithBuild(List<KeyBoard> keyBoard){
+        for (KeyBoard kb : keyBoard)
+            kb.build();
+        content.addAll(keyBoard);
+    }
 
     public Tile setKeyboard(List<KeyBoard> keyBoard){
         content.clear();
-        content.addAll(keyBoard);
+       // content.addAll(keyBoard);
+        addKeyboardWithBuild(keyBoard);
         return this;
     }
 
@@ -145,6 +163,7 @@ public class Tile{
         //предполагается что после update keyboard будет создан новый, а не изменен старый
         Tile tile = new Tile()
                 .setCaption(caption)
+                .setTileCaptionUpdater(tileCaptionUpdater)
                 .setKeyboard(content)
                 .setParseMode(parseMode);
 
@@ -155,7 +174,8 @@ public class Tile{
 
     public Tile stepBack() throws HomeApiWrongResponseData {
         Tile t = historyStack.pop();
-        setTileCaptionUpdater(null);
+        setTileCaptionUpdater(null);//wtf
+        setTileCaptionUpdater(t.tileCaptionUpdater);
         setCaption(t.caption);
 
         this.content = t.content;
