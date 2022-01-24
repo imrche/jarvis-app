@@ -9,6 +9,8 @@ home:
   proto: ${HOME_CONNECTION_PROTOCOL}
   ip: ${HOME_CONNECTION_IP}
   port: ${HOME_CONNECTION_PORT}
+  login: ${HOME_CONNECTION_LOGIN}
+  password: ${HOME_CONNECTION_PASSWORD}
 logging:
   level:
     org.rch.jarvisapp: FATAL
